@@ -34,6 +34,7 @@ function discoverApps(baseDir: string) {
 const frontEndAppsDir = path.resolve(process.cwd(), 'front-end-apps');
 const serverAppsDir = path.resolve(process.cwd(), 'server-apps');
 
+
 const allApps = [...discoverApps(frontEndAppsDir), ...discoverApps(serverAppsDir)].sort((a, b) =>
   a.name.localeCompare(b.name)
 );

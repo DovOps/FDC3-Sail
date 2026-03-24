@@ -7,11 +7,11 @@
             "description": "Displays a ticker news of a given stock, using the Polygon applications",
             "type": "web",
             "details": {
-                "url": "http://localhost:4017/index.html"
+                "url": "http://localhost:4019/"
             },
             "screenshots": [
                 {
-                    "src": "http://localhost:4017/news.png",
+                    "src": "http://localhost:4019/news.png",
                     "label": "Demo Screenshot"
                 }
             ],
@@ -20,7 +20,7 @@
             "publisher": "FINOS",
             "icons": [
                 {
-                    "src": "http://localhost:4017polygon-io-logo.webp"
+                    "src": "http://localhost:4019/polygon-io-logo.webp"
                 }
             ],
             "interop": {
