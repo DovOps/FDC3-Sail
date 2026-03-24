@@ -59,6 +59,7 @@ const DirectoryItem = ({ d }: { d: Directory }) => {
         <div
           className={styles.name}
           contentEditable={true}
+          suppressContentEditableWarning={true}
           onBlur={(e) => updateText(d.url, e.currentTarget.textContent!)}
         >
           {d.label}
@@ -66,6 +67,7 @@ const DirectoryItem = ({ d }: { d: Directory }) => {
         <div
           className={styles.url}
           contentEditable={true}
+          suppressContentEditableWarning={true}
           onBlur={(e) => updateUrl(d.url, e.currentTarget.textContent!)}
         >
           {d.url}
