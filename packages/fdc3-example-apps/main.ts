@@ -86,6 +86,7 @@ async function startApp(appName: string, appRoot: string, port: number) {
   // Each app gets its own isolated Vite server
   const vite = await createServer({
     root: appRoot,
+    cacheDir: path.join(appRoot, '.vite'),
     server: {
       middlewareMode: true,
       hmr: {
