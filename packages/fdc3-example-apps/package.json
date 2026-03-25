@@ -5,8 +5,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx main.ts",
-    "build": "tsx build.ts"
+    "dev": "tsx main.ts"
   },
 
   "dependencies": {

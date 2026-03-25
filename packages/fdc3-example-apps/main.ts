@@ -3,10 +3,13 @@ import http from 'http';
 import { createServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
 dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const BASE_PORT = 4010;
 
@@ -32,11 +35,14 @@ function discoverApps(baseDir: string) {
     }));
 }
 
-const packageRoot = path.resolve(process.cwd());
+/** This package (`packages/fdc3-example-apps`), not `process.cwd()` (workspace runs may use repo root). */
+const packageRoot = __dirname;
+const sailRepoRoot = path.resolve(packageRoot, '..', '..');
 const frontEndAppsDir = path.join(packageRoot, 'front-end-apps');
 const serverAppsDir = path.join(packageRoot, 'server-apps');
 /** Shared browser + Node demo utilities (Vite may import outside each app `root`). */
 const securityDemoDir = path.join(packageRoot, 'common', 'src', 'security-demo');
+const generatedAppdPath = path.join(sailRepoRoot, 'directory', 'generated', 'fdc3-example-apps.json');
 
 
 const allApps = [...discoverApps(frontEndAppsDir), ...discoverApps(serverAppsDir)].sort((a, b) =>
@@ -62,6 +68,38 @@ const apps = allApps.map((a, index) => {
     port,
   };
 });
+
+type AppWithPort = { name: string; root: string; port: number };
+
+function buildCombinedAppDirectory(appsList: AppWithPort[]) {
+  const combined = {
+    applications: [] as any[],
+    message: 'OK',
+  };
+
+  for (const a of appsList) {
+    const appdPath = path.join(a.root, 'static', 'appd.v2.json');
+    if (fs.existsSync(appdPath)) {
+      try {
+        const content = JSON.parse(fs.readFileSync(appdPath, 'utf-8'));
+        if (Array.isArray(content.applications)) {
+          combined.applications.push(...content.applications);
+        }
+      } catch (e) {
+        console.error(`Failed to read appd.v2.json for ${a.name}`, e);
+      }
+    }
+  }
+
+  return combined;
+}
+
+function writeGeneratedAppDirectory(combined: { applications: any[]; message: string }) {
+  const dir = path.dirname(generatedAppdPath);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(generatedAppdPath, `${JSON.stringify(combined, null, 4)}\n`, 'utf-8');
+  console.info({ path: generatedAppdPath }, 'Wrote generated app directory');
+}
 
 async function startApp(appName: string, appRoot: string, port: number) {
   const app = express();
@@ -128,55 +166,15 @@ async function startApp(appName: string, appRoot: string, port: number) {
   });
 }
 
-async function startAppDirectoryServer(apps: any[]) {
-  const app = express();
-  const PORT = 4040;
-
-  // Basic CORS support
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-  });
-
-  app.get('/appd.v2.json', (req, res) => {
-    const combined = {
-      applications: [] as any[],
-      message: 'OK',
-    };
-
-    for (const a of apps) {
-      const appdPath = path.join(a.root, 'static', 'appd.v2.json');
-      if (fs.existsSync(appdPath)) {
-        try {
-          const content = JSON.parse(fs.readFileSync(appdPath, 'utf-8'));
-          if (Array.isArray(content.applications)) {
-            combined.applications.push(...content.applications);
-          }
-        } catch (e) {
-          console.error(`Failed to read appd.v2.json for ${a.name}`, e);
-        }
-      }
-    }
-
-    res.json(combined);
-  });
-
-  app.listen(PORT, () => {
-    console.info(
-      { appName: 'AppDirectory', port: PORT, url: `http://localhost:${PORT}/appd.v2.json` },
-      'App Directory server online'
-    );
-  });
-}
-
 (async () => {
   if (apps.length === 0) {
     console.warn('No apps found to start.');
     return;
   }
   console.log(`Starting ${apps.length} applications from ${frontEndAppsDir} and ${serverAppsDir}...`);
+
+  const combinedAppd = buildCombinedAppDirectory(apps);
+  writeGeneratedAppDirectory(combinedAppd);
 
   // Start the apps
   for (const a of apps) {
@@ -185,12 +183,5 @@ async function startAppDirectoryServer(apps: any[]) {
     } catch (err) {
       console.error({ appName: a.name, error: err }, 'Failed to start application server');
     }
-  }
-
-  // Start the combined directory server
-  try {
-    await startAppDirectoryServer(apps);
-  } catch (err) {
-    console.error({ error: err }, 'Failed to start App Directory server');
   }
 })();

@@ -46,38 +46,13 @@ export class LocalStorageClientState extends AbstractClientState {
 
 const DEFAULT_DIRECTORIES: Directory[] = [
     {
-        label: "Benzinga Apps",
-        url: "../../directory/benzinga.json",
-        active: false
-    },
-    {
-        label: "FDC3 Conformance",
-        url: "../../directory/conformance.json",
-        active: false
-    },
-    {
-        label: "Polygon Apps",
-        url: "../../directory/polygon.json",
-        active: true
-    },
-    {
         label: "FINOS FDC3 Directory",
         url: "https://directory.fdc3.finos.org/v2/apps/",
         active: false
     },
     {
         label: "Sail Example Apps",
-        url: "../../directory/sail.json",
-        active: true
-    },
-    {
-        label: "TradingView Apps",
-        url: "../../directory/trading-view.json",
-        active: true
-    },
-    {
-        label: "Developer Tutorial Training Apps",
-        url: "../../directory/training.json",
+        url: "../../directory/generated/fdc3-example-apps.json",
         active: true
     },
     {
@@ -88,6 +63,11 @@ const DEFAULT_DIRECTORIES: Directory[] = [
     {
         label: "Symphony Chat Platform",
         url: "../../directory/symphony.json",
+        active: false
+    },
+    {
+        label: "FDC3 Conformance",
+        url: "../../directory/conformance.json",
         active: false
     }
 ]
