@@ -87,19 +87,13 @@ class App1BackendHandlers extends DefaultFDC3Handlers {
     if (purpose === 'request-prices') {
       const body = o as RequestPricesPayload;
       const instrument = body.context ?? body.instrument;
-      const intent = body.intent ?? 'demo.GetPrices';
       if (!instrument || typeof instrument !== 'object') {
         return undefined;
       }
 
-      const ctx = { ...instrument } as Context & { __jwt?: string };
-      if (this.user?.jwt != null) {
-        ctx.__jwt = typeof this.user.jwt === 'string' ? this.user.jwt : JSON.stringify(this.user.jwt);
-      }
-
-      const { signature, antiReplay } = await this.security.sign(ctx);
+      const { signature, antiReplay } = await this.security.sign(instrument);
       const packedMeta = { signature, antiReplay } as unknown as ContextMetadata;
-      const { context: signed } = this.metadataHandler.pack(ctx, packedMeta);
+      const { context: signed } = this.metadataHandler.pack(instrument, packedMeta);
       return signed;
     }
 
@@ -115,12 +109,19 @@ class App1BackendHandlers extends DefaultFDC3Handlers {
       return;
     }
 
-    await channel.addContextListener('fdc3.valuation', async (ctx: Context, meta?: ContextMetadata) => {
-      emitToClient(this.ws, EXCHANGE_DATA, {
-        purpose: VALUATION_PUSH_PURPOSE,
-        o: { ctx, meta },
-      });
-    });
+    // Defer addContextListener until after the secure-boundary server has ack'd
+    // HANDLE_REMOTE_CHANNEL; otherwise the client stays blocked in exchange() and never
+    // answers addContextListenerRequest (timeout on addContextListenerResponse).
+    setTimeout(() => {
+      void (async () => {
+        await channel.addContextListener('fdc3.valuation', async (ctx: Context, meta?: ContextMetadata) => {
+          emitToClient(this.ws, EXCHANGE_DATA, {
+            purpose: VALUATION_PUSH_PURPOSE,
+            o: { ctx, meta },
+          });
+        });
+      })();
+    }, 0);
   }
 }
 

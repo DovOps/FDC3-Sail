@@ -20,7 +20,7 @@ import {
 export const VALUATION_PUSH_PURPOSE = 'valuation-push';
 
 /**
- * App2: verifies signed `demo.GetPrices` context + optional user JWT, returns a private channel result,
+ * App2: verifies signed `demo.GetPrices` context, returns a private channel result,
  * then broadcasts demo valuations on that channel and mirrors them to the connected client via {@link EXCHANGE_DATA}.
  */
 class App2BackendHandlers extends DefaultFDC3Handlers {
@@ -50,31 +50,6 @@ class App2BackendHandlers extends DefaultFDC3Handlers {
       );
       if (!auth.signed || !auth.trusted || !auth.valid) {
         return unauthorizedContext(context, 'Signature verification failed');
-      }
-
-      const jwtRaw = (context as Context & { __jwt?: string }).__jwt;
-      if (!jwtRaw) {
-        return unauthorizedContext(context, 'Missing __jwt on signed context');
-      }
-
-      const jwtStr = typeof jwtRaw === 'string' ? jwtRaw : JSON.stringify(jwtRaw);
-      let claims;
-      try {
-        claims = await this.security.verifyJWTToken(jwtStr);
-      } catch {
-        return unauthorizedContext(context, 'JWT verification failed');
-      }
-
-      if (claims.sub !== 'demo-user@example.com') {
-        return unauthorizedContext(context, 'Unexpected JWT subject');
-      }
-      const aud = String(claims.aud ?? '');
-      if (
-        !aud.startsWith('http://localhost:') &&
-        !aud.startsWith('http://127.0.0.1:') &&
-        !aud.startsWith('https://')
-      ) {
-        return unauthorizedContext(context, 'Unexpected JWT audience');
       }
 
       return { type: 'private' } as unknown as Context;
