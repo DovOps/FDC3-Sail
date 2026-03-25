@@ -14,7 +14,7 @@
       "publisher": "FINOS",
       "icons": [
         {
-          "src": "http://localhost:4031/static/icons/icon.svg"
+          "src": "http://localhost:4031/icon.svg"
         }
       ]
     }

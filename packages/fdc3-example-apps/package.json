@@ -12,7 +12,7 @@
   "dependencies": {
     "@azure/msal-browser": "^4.12.0",
     "@finos/fdc3": "2.2.0",
-    "@finos/fdc3-security": "file:../../../FDC3/packages/fdc3-security",
+    "@finos/fdc3-security": "npm:@robmoffat/fdc3-security@3.0.0-alpha.1",
     "@jridgewell/trace-mapping": "^0.3.28",
     "dotenv": "^16.4.0",
     "canonicalize": "^2.1.0",
