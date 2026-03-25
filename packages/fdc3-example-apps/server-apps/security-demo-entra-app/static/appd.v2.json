@@ -20,12 +20,12 @@
       "interop": {
         "intents": {
           "listensFor": {
-            "GetUser": {
-              "displayName": "Retrieve the User JWT",
+            "CreateIdentityToken": {
+              "displayName": "Create identity token",
               "contexts": [
-                "fdc3.user.request"
+                "fdc3.security.userRequest"
               ],
-              "resultType": "fdc3.user"
+              "resultType": "fdc3.security.encryptedContext"
             }
           }
         }

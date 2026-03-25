@@ -1,8 +1,8 @@
 import type { Application } from 'express';
 import type { Server } from 'http';
 import { WebSocket } from 'ws';
-import { Context } from '@finos/fdc3-context';
 import { IntentHandler } from '@finos/fdc3';
+import { Context } from '@finos/fdc3-context';
 import {
   AllowListFunction,
   createJosePrivateFDC3Security,
@@ -13,7 +13,7 @@ import {
 } from '@finos/fdc3-security';
 
 /** Standard intent name; matches FDC3 Security & Identity docs and get-user-example.ts */
-const CREATE_IDENTITY_TOKEN = 'CreateIdentityToken';
+export const CREATE_IDENTITY_TOKEN = 'CreateIdentityToken';
 
 /**
  * IDP secure-boundary: {@link CREATE_IDENTITY_TOKEN} returns `fdc3.security.encryptedContext`

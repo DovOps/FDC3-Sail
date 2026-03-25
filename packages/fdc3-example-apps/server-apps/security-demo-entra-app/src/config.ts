@@ -1,6 +1,9 @@
+import fs from 'fs';
+import path from 'path';
+
 /**
- * Microsoft Entra ID Configuration
- * Shared configuration for both client and server
+ * Microsoft Entra ID configuration (stored in `properties.json` next to this app).
+ * Register `redirectUri` (and SPA redirect) in Azure for the same URL / port.
  */
 
 export interface EntraConfig {
@@ -10,15 +13,31 @@ export interface EntraConfig {
   tenantId: string;
 }
 
-/**
- * Get Microsoft Entra configuration from environment variables
- * Falls back to default values for development
- */
-export function getEntraConfig(): EntraConfig {
+type PropertiesFile = {
+  port?: number;
+  entra?: Partial<EntraConfig>;
+};
+
+/** Server-only: read `properties.json` from the app root (same folder as `index.html`). */
+export function loadEntraConfig(appRoot: string): EntraConfig {
+  const propPath = path.join(appRoot, 'properties.json');
+  const raw = fs.readFileSync(propPath, 'utf-8');
+  const props = JSON.parse(raw) as PropertiesFile;
+  const e = props.entra;
+  if (!e?.clientId || !e.authority || !e.tenantId) {
+    throw new Error(
+      `properties.json must include "entra": { "clientId", "authority", "tenantId" } (${propPath})`
+    );
+  }
+  const redirectUri =
+    e.redirectUri ?? (props.port != null ? `http://localhost:${props.port}` : undefined);
+  if (!redirectUri) {
+    throw new Error(`properties.json: set "entra.redirectUri" or top-level "port" (${propPath})`);
+  }
   return {
-    clientId: '62855256-b4f2-406f-9878-be85128aa4f7',
-    authority: 'https://login.microsoftonline.com/445c1fc6-7e1e-46dd-8835-9075a151049a',
-    redirectUri: 'http://localhost:4006',
-    tenantId: '445c1fc6-7e1e-46dd-8835-9075a151049a',
+    clientId: e.clientId,
+    authority: e.authority,
+    tenantId: e.tenantId,
+    redirectUri,
   };
 }
