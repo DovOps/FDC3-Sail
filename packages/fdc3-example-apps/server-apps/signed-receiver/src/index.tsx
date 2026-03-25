@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Channel, Context, ContextMetadata, DesktopAgent, getAgent, Listener } from '@finos/fdc3';
+import { Channel, Context, ContextHandler, ContextMetadata, DesktopAgent, getAgent, Listener } from '@finos/fdc3';
 import {
   connectRemoteHandlers,
   createJosePublicFDC3SecurityFromUrl,
-  JsonWebKeyWithId,
   MetadataHandlerImpl,
-  PublicEncryptedContextListenerSupport,
+  PublicSignatureCheckingHandlerSupport,
 } from '@finos/fdc3-security';
 import styles from './main.module.css';
 
-/** Plain context type inside encrypted envelopes (must match sender). */
-const DECRYPTED_CONTEXT_TYPE = 'test.encrypted';
+const CONTEXT_TYPE = 'fdc3.instrument';
+
+type AuthenticityMeta = {
+  signed?: boolean;
+  trusted?: boolean;
+  jku?: string;
+  errors?: unknown;
+};
 
 function wsUrlForPage(): string {
   return (window.location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + window.location.host;
@@ -25,7 +30,7 @@ function prettyJson(value: unknown): string {
   }
 }
 
-export const EncryptedReceiveComponent = () => {
+export const SignedReceiverComponent = () => {
   const [logMessages, setLogMessages] = useState<string[]>([]);
   const [channelId, setChannelId] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('Connecting to desktop agent…');
@@ -35,50 +40,54 @@ export const EncryptedReceiveComponent = () => {
     let remoteHandlers: (Awaited<ReturnType<typeof connectRemoteHandlers>> & { disconnect(): Promise<void> }) | null =
       null;
     let agent: DesktopAgent | null = null;
-    let encryptedListener: Listener | null = null;
+    let instrumentListener: Listener | null = null;
     let userChannelListener: Listener | null = null;
-    let support: PublicEncryptedContextListenerSupport | null = null;
 
     const pushLog = (line: string) => {
       setLogMessages((prev) => [...prev, line]);
     };
 
-    const teardownEncryptedListener = async () => {
-      if (encryptedListener) {
+    const teardownInstrumentListener = async () => {
+      if (instrumentListener) {
         try {
-          await encryptedListener.unsubscribe();
+          await instrumentListener.unsubscribe();
         } catch {
           /* ignore */
         }
-        encryptedListener = null;
+        instrumentListener = null;
       }
     };
 
     const bindToUserChannel = async (channel: Channel | null) => {
-      await teardownEncryptedListener();
+      await teardownInstrumentListener();
       if (!channel) {
         setChannelId(null);
         setStatus('No user channel — select or join a channel in the desktop (same as the training Receive app).');
         return;
       }
-      if (cancelled || !support || !remoteHandlers) return;
+      if (cancelled || !support) return;
 
       const id = channel.id ?? '(unknown)';
       setChannelId(id);
-      setStatus(`Listening for encrypted → ${DECRYPTED_CONTEXT_TYPE} on user channel ${id}`);
+      setStatus(`Listening for signed ${CONTEXT_TYPE} on user channel ${id} (verification via jku in signature).`);
 
-      encryptedListener = await support.addContextListener(
-        channel,
-        DECRYPTED_CONTEXT_TYPE,
-        (ctx: Context, meta?: ContextMetadata) => {
-          pushLog('Decrypted:\n' + prettyJson(ctx));
-          const encryption = meta && 'encryption' in meta ? (meta as { encryption?: string }).encryption : undefined;
-          if (encryption === 'decrypted') {
-            pushLog('(metadata: decryption performed on front-end)');
-          }
+      const baseHandler: ContextHandler = async (ctx: Context, meta?: ContextMetadata) => {
+        pushLog('[VERIFIED] Context:\n' + prettyJson(ctx));
+        pushLog('[VERIFIED] Metadata:\n' + prettyJson(meta));
+        const authenticity =
+          meta && 'authenticity' in meta ? (meta as { authenticity?: AuthenticityMeta }).authenticity : undefined;
+        if (authenticity?.signed && authenticity.trusted) {
+          pushLog('Verification: trusted; signer JWKS URL: ' + String(authenticity.jku ?? '(none)'));
+        } else if (authenticity?.errors) {
+          pushLog('Verification issues:\n' + prettyJson(authenticity.errors));
         }
-      );
+      };
+
+      const wrapped = (await support.wrapContextHandler(baseHandler)) as ContextHandler;
+      instrumentListener = await channel.addContextListener(CONTEXT_TYPE, wrapped);
     };
+
+    let support: PublicSignatureCheckingHandlerSupport | null = null;
 
     const onUserChannelChanged = () => {
       void (async () => {
@@ -103,25 +112,7 @@ export const EncryptedReceiveComponent = () => {
         const jwksUrl = `${window.location.origin}/.well-known/jwks.json`;
         const publicSecurity = await createJosePublicFDC3SecurityFromUrl(jwksUrl, () => true);
         const metadataHandler = new MetadataHandlerImpl(false);
-
-        const signingFunction = async (context: Context) => {
-          const result = (await remoteHandlers!.exchangeData('sign-context', { context })) as {
-            signature: unknown;
-            antiReplay: unknown;
-          };
-          return result;
-        };
-
-        const unwrapFunction = async (skr: object): Promise<JsonWebKeyWithId> => {
-          return (await remoteHandlers!.exchangeData('unwrap-symmetric-key', skr)) as JsonWebKeyWithId;
-        };
-
-        support = new PublicEncryptedContextListenerSupport(
-          publicSecurity,
-          metadataHandler,
-          signingFunction,
-          unwrapFunction
-        );
+        support = new PublicSignatureCheckingHandlerSupport(metadataHandler, publicSecurity);
 
         setStatus('Waiting for user channel…');
         userChannelListener = await agent.addEventListener('userChannelChanged', () => {
@@ -148,7 +139,7 @@ export const EncryptedReceiveComponent = () => {
             /* ignore */
           }
         }
-        await teardownEncryptedListener();
+        await teardownInstrumentListener();
         if (remoteHandlers) {
           try {
             await remoteHandlers.disconnect();
@@ -162,11 +153,12 @@ export const EncryptedReceiveComponent = () => {
 
   return (
     <div className={styles.receiveComponent}>
-      <h2>Encrypted channel receiver</h2>
+      <h2>Signed broadcast receiver</h2>
       <p className={styles.statusLine}>
-        Uses the <strong>current user channel</strong> (<code>getCurrentChannel</code> / <code>userChannelChanged</code>
-        ). Decrypted <code>{DECRYPTED_CONTEXT_TYPE}</code> from <code>fdc3.security.encryptedContext</code>. Signing and
-        key unwrap use this app&apos;s backend via <code>exchangeData</code>.
+        Same pattern as <code>signing-broadcast-example.ts</code> (App B): <code>PublicSignatureCheckingHandlerSupport</code>{' '}
+        wraps a listener for <code>{CONTEXT_TYPE}</code> on the <strong>current user channel</strong>. Verification
+        resolves the signer&apos;s keys from the <code>jku</code> in the signature (this app&apos;s JWKS is only used to
+        construct the verifier; backend is default handlers + WebSocket).
       </p>
       <div className={styles.channelInfo}>User channel: {channelId ?? '—'}</div>
       <div className={styles.channelInfo}>{status}</div>
@@ -184,4 +176,4 @@ export const EncryptedReceiveComponent = () => {
 const container = document.getElementById('app');
 const root = createRoot(container!);
 
-root.render(<EncryptedReceiveComponent />);
+root.render(<SignedReceiverComponent />);

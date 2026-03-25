@@ -12,7 +12,11 @@
       "hostManifests": {},
       "version": "1.0.0",
       "publisher": "FINOS",
-      "icons": []
+      "icons": [
+        {
+          "src": "http://localhost:4101/icon.svg"
+        }
+      ]
     }
   ],
   "message": "OK"
