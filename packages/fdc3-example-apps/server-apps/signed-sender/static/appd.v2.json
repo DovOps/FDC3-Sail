@@ -7,14 +7,14 @@
       "description": "FDC3 signed broadcast demo — signs fdc3.instrument on the backend (BasicSignedBroadcaster) and broadcasts on the user channel.",
       "type": "web",
       "details": {
-        "url": "http://localhost:4102/"
+        "url": "http://localhost:4038"
       },
       "hostManifests": {},
       "version": "1.0.0",
       "publisher": "FINOS",
       "icons": [
         {
-          "src": "http://localhost:4102/icon.svg"
+          "src": "http://localhost:4038/icon.svg"
         }
       ]
     }

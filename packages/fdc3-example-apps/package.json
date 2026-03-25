@@ -10,6 +10,7 @@
   },
 
   "dependencies": {
+    "@azure/msal-browser": "^4.12.0",
     "@finos/fdc3": "2.2.0",
     "@finos/fdc3-security": "file:../../../FDC3/packages/fdc3-security",
     "@jridgewell/trace-mapping": "^0.3.28",

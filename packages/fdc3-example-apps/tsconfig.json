@@ -16,6 +16,7 @@
     "vite-env.d.ts",
     "main.ts",
     "build.ts",
+    "common/**/*.ts",
     "front-end-apps/**/*.ts",
     "front-end-apps/**/*.tsx",
     "server-apps/**/*.ts",

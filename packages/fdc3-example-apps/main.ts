@@ -32,8 +32,11 @@ function discoverApps(baseDir: string) {
     }));
 }
 
-const frontEndAppsDir = path.resolve(process.cwd(), 'front-end-apps');
-const serverAppsDir = path.resolve(process.cwd(), 'server-apps');
+const packageRoot = path.resolve(process.cwd());
+const frontEndAppsDir = path.join(packageRoot, 'front-end-apps');
+const serverAppsDir = path.join(packageRoot, 'server-apps');
+/** Shared browser + Node demo utilities (Vite may import outside each app `root`). */
+const securityDemoDir = path.join(packageRoot, 'common', 'src', 'security-demo');
 
 
 const allApps = [...discoverApps(frontEndAppsDir), ...discoverApps(serverAppsDir)].sort((a, b) =>
@@ -96,6 +99,9 @@ async function startApp(appName: string, appRoot: string, port: number) {
     cacheDir: path.join(appRoot, '.vite'),
     server: {
       middlewareMode: true,
+      fs: {
+        allow: [appRoot, securityDemoDir, packageRoot],
+      },
       hmr: {
         port: port + 100, // Avoid HMR port conflicts
       },
