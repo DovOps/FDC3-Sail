@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import { createServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -63,14 +64,19 @@ async function startApp(appName: string, appRoot: string, port: number) {
   const app = express();
   app.use(express.json());
 
-  // Load backend if exists (mostly used in server-apps)
+  // Load backend if exists (mostly used in server-apps). Receives the shared HTTP server
+  // so WebSocket + JWKS can bind to the same port as Express + Vite.
   const backendPath = path.join(appRoot, 'src', 'backend.ts');
+  const server = http.createServer(app);
   if (fs.existsSync(backendPath)) {
     try {
       const backendUrl = `file://${backendPath}`;
       const { default: backend } = await import(backendUrl);
       if (typeof backend === 'function') {
-        backend(app);
+        const result = backend(app, server, { port, appRoot });
+        if (result != null && typeof (result as Promise<void>).then === 'function') {
+          await result;
+        }
       }
     } catch (e) {
       console.error({ appName, error: e }, 'Failed to load backend extension');
@@ -111,7 +117,7 @@ async function startApp(appName: string, appRoot: string, port: number) {
     }
   });
 
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.info({ appName, port, url: `http://localhost:${port}` }, 'Application server online');
   });
 }
