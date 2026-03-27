@@ -19,7 +19,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@finos/fdc3": "2.2.1-beta.2",
+    "@finos/fdc3": "2.2.1-beta.3",
     "electron": "^36.9.5"
   }
 }

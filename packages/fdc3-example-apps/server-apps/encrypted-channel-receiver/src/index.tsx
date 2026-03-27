@@ -1,174 +1,216 @@
-import { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Channel, Context, ContextMetadata, DesktopAgent, getAgent, Listener } from '@finos/fdc3';
+import { useEffect, useState } from "react"
+import { createRoot } from "react-dom/client"
+import {
+  Channel,
+  Context,
+  ContextMetadata,
+  DesktopAgent,
+  getAgent,
+  Listener,
+} from "@robmoffat/fdc3"
 import {
   connectRemoteHandlers,
   createJosePublicFDC3SecurityFromUrl,
   JsonWebKeyWithId,
   MetadataHandlerImpl,
   PublicEncryptedContextListenerSupport,
-} from '@finos/fdc3-security';
-import styles from './main.module.css';
+} from "@robmoffat/fdc3-security"
+import styles from "./main.module.css"
 
 /** Plain context type inside encrypted envelopes (must match sender). */
-const DECRYPTED_CONTEXT_TYPE = 'test.encrypted';
+const DECRYPTED_CONTEXT_TYPE = "test.encrypted"
 
 function wsUrlForPage(): string {
-  return (window.location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + window.location.host;
+  return (
+    (window.location.protocol === "https:" ? "wss:" : "ws:") +
+    "//" +
+    window.location.host
+  )
 }
 
 function prettyJson(value: unknown): string {
   try {
-    return JSON.stringify(value, null, 2);
+    return JSON.stringify(value, null, 2)
   } catch {
-    return String(value);
+    return String(value)
   }
 }
 
 export const EncryptedReceiveComponent = () => {
-  const [logMessages, setLogMessages] = useState<string[]>([]);
-  const [channelId, setChannelId] = useState<string | null>(null);
-  const [status, setStatus] = useState<string>('Connecting to desktop agent…');
+  const [logMessages, setLogMessages] = useState<string[]>([])
+  const [channelId, setChannelId] = useState<string | null>(null)
+  const [status, setStatus] = useState<string>("Connecting to desktop agent…")
 
   useEffect(() => {
-    let cancelled = false;
-    let remoteHandlers: (Awaited<ReturnType<typeof connectRemoteHandlers>> & { disconnect(): Promise<void> }) | null =
-      null;
-    let agent: DesktopAgent | null = null;
-    let encryptedListener: Listener | null = null;
-    let userChannelListener: Listener | null = null;
-    let support: PublicEncryptedContextListenerSupport | null = null;
+    let cancelled = false
+    let remoteHandlers:
+      | (Awaited<ReturnType<typeof connectRemoteHandlers>> & {
+          disconnect(): Promise<void>
+        })
+      | null = null
+    let agent: DesktopAgent | null = null
+    let encryptedListener: Listener | null = null
+    let userChannelListener: Listener | null = null
+    let support: PublicEncryptedContextListenerSupport | null = null
 
     const pushLog = (line: string) => {
-      setLogMessages((prev) => [...prev, line]);
-    };
+      setLogMessages((prev) => [...prev, line])
+    }
 
     const teardownEncryptedListener = async () => {
       if (encryptedListener) {
         try {
-          await encryptedListener.unsubscribe();
+          await encryptedListener.unsubscribe()
         } catch {
           /* ignore */
         }
-        encryptedListener = null;
+        encryptedListener = null
       }
-    };
+    }
 
     const bindToUserChannel = async (channel: Channel | null) => {
-      await teardownEncryptedListener();
+      await teardownEncryptedListener()
       if (!channel) {
-        setChannelId(null);
-        setStatus('No user channel — select or join a channel in the desktop (same as the training Receive app).');
-        return;
+        setChannelId(null)
+        setStatus(
+          "No user channel — select or join a channel in the desktop (same as the training Receive app).",
+        )
+        return
       }
-      if (cancelled || !support || !remoteHandlers) return;
+      if (cancelled || !support || !remoteHandlers) return
 
-      const id = channel.id ?? '(unknown)';
-      setChannelId(id);
-      setStatus(`Listening for encrypted → ${DECRYPTED_CONTEXT_TYPE} on user channel ${id}`);
+      const id = channel.id ?? "(unknown)"
+      setChannelId(id)
+      setStatus(
+        `Listening for encrypted → ${DECRYPTED_CONTEXT_TYPE} on user channel ${id}`,
+      )
 
       encryptedListener = await support.addContextListener(
         channel,
         DECRYPTED_CONTEXT_TYPE,
         (ctx: Context, meta?: ContextMetadata) => {
-          pushLog('Decrypted:\n' + prettyJson(ctx));
-          const encryption = meta && 'encryption' in meta ? (meta as { encryption?: string }).encryption : undefined;
-          if (encryption === 'decrypted') {
-            pushLog('(metadata: decryption performed on front-end)');
+          pushLog("Decrypted:\n" + prettyJson(ctx))
+          const encryption =
+            meta && "encryption" in meta
+              ? (meta as { encryption?: string }).encryption
+              : undefined
+          if (encryption === "decrypted") {
+            pushLog("(metadata: decryption performed on front-end)")
           }
-        }
-      );
-    };
+        },
+      )
+    }
 
     const onUserChannelChanged = () => {
       void (async () => {
-        if (!agent || cancelled) return;
-        const ch = await agent.getCurrentChannel();
-        await bindToUserChannel(ch);
-      })();
-    };
+        if (!agent || cancelled) return
+        const ch = await agent.getCurrentChannel()
+        await bindToUserChannel(ch)
+      })()
+    }
 
     void (async () => {
       try {
-        agent = await getAgent();
-        if (cancelled) return;
+        agent = await getAgent()
+        if (cancelled) return
 
-        setStatus('Connecting secure backend (WebSocket)…');
-        remoteHandlers = await connectRemoteHandlers(wsUrlForPage(), agent, async () => {});
+        setStatus("Connecting secure backend (WebSocket)…")
+        remoteHandlers = await connectRemoteHandlers(
+          wsUrlForPage(),
+          agent,
+          async () => {},
+        )
         if (cancelled) {
-          await remoteHandlers.disconnect();
-          return;
+          await remoteHandlers.disconnect()
+          return
         }
 
-        const jwksUrl = `${window.location.origin}/.well-known/jwks.json`;
-        const publicSecurity = await createJosePublicFDC3SecurityFromUrl(jwksUrl, () => true);
-        const metadataHandler = new MetadataHandlerImpl(false);
+        const jwksUrl = `${window.location.origin}/.well-known/jwks.json`
+        const publicSecurity = await createJosePublicFDC3SecurityFromUrl(
+          jwksUrl,
+          () => true,
+        )
+        const metadataHandler = new MetadataHandlerImpl(false)
 
         const signingFunction = async (context: Context) => {
-          const result = (await remoteHandlers!.exchangeData('sign-context', { context })) as {
-            signature: unknown;
-            antiReplay: unknown;
-          };
-          return result;
-        };
+          const result = (await remoteHandlers!.exchangeData("sign-context", {
+            context,
+          })) as {
+            signature: unknown
+            antiReplay: unknown
+          }
+          return result
+        }
 
-        const unwrapFunction = async (skr: object): Promise<JsonWebKeyWithId> => {
-          return (await remoteHandlers!.exchangeData('unwrap-symmetric-key', skr)) as JsonWebKeyWithId;
-        };
+        const unwrapFunction = async (
+          skr: object,
+        ): Promise<JsonWebKeyWithId> => {
+          return (await remoteHandlers!.exchangeData(
+            "unwrap-symmetric-key",
+            skr,
+          )) as JsonWebKeyWithId
+        }
 
         support = new PublicEncryptedContextListenerSupport(
           publicSecurity,
           metadataHandler,
           signingFunction,
-          unwrapFunction
-        );
+          unwrapFunction,
+        )
 
-        setStatus('Waiting for user channel…');
-        userChannelListener = await agent.addEventListener('userChannelChanged', () => {
-          onUserChannelChanged();
-        });
-        const initial = await agent.getCurrentChannel();
-        await bindToUserChannel(initial);
+        setStatus("Waiting for user channel…")
+        userChannelListener = await agent.addEventListener(
+          "userChannelChanged",
+          () => {
+            onUserChannelChanged()
+          },
+        )
+        const initial = await agent.getCurrentChannel()
+        await bindToUserChannel(initial)
 
-        pushLog('Listening for user channel changes (getCurrentChannel + userChannelChanged).');
+        pushLog(
+          "Listening for user channel changes (getCurrentChannel + userChannelChanged).",
+        )
       } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        setStatus('Error: ' + msg);
-        pushLog('Error: ' + msg);
+        const msg = e instanceof Error ? e.message : String(e)
+        setStatus("Error: " + msg)
+        pushLog("Error: " + msg)
       }
-    })();
+    })()
 
     return () => {
-      cancelled = true;
+      cancelled = true
       void (async () => {
         if (userChannelListener) {
           try {
-            await userChannelListener.unsubscribe();
+            await userChannelListener.unsubscribe()
           } catch {
             /* ignore */
           }
         }
-        await teardownEncryptedListener();
+        await teardownEncryptedListener()
         if (remoteHandlers) {
           try {
-            await remoteHandlers.disconnect();
+            await remoteHandlers.disconnect()
           } catch {
             /* ignore */
           }
         }
-      })();
-    };
-  }, []);
+      })()
+    }
+  }, [])
 
   return (
     <div className={styles.receiveComponent}>
       <h2>Encrypted channel receiver</h2>
       <p className={styles.statusLine}>
-        Uses the <strong>current user channel</strong> (<code>getCurrentChannel</code> / <code>userChannelChanged</code>
-        ). Decrypted <code>{DECRYPTED_CONTEXT_TYPE}</code> from <code>fdc3.security.encryptedContext</code>. Signing and
-        key unwrap use this app&apos;s backend via <code>exchangeData</code>.
+        Uses the <strong>current user channel</strong> (
+        <code>getCurrentChannel</code> / <code>userChannelChanged</code>
+        ). Decrypted <code>{DECRYPTED_CONTEXT_TYPE}</code> from{" "}
+        <code>fdc3.security.encryptedContext</code>. Signing and key unwrap use
+        this app&apos;s backend via <code>exchangeData</code>.
       </p>
-      <div className={styles.channelInfo}>User channel: {channelId ?? '—'}</div>
+      <div className={styles.channelInfo}>User channel: {channelId ?? "—"}</div>
       <div className={styles.channelInfo}>{status}</div>
       <div id="log" className={styles.receiveLog}>
         {logMessages.map((msg, index) => (
@@ -178,10 +220,10 @@ export const EncryptedReceiveComponent = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-const container = document.getElementById('app');
-const root = createRoot(container!);
+const container = document.getElementById("app")
+const root = createRoot(container!)
 
-root.render(<EncryptedReceiveComponent />);
+root.render(<EncryptedReceiveComponent />)
