@@ -93,7 +93,14 @@ const helloListener = (e: MessageEvent) => {
     const instanceId = getInstanceId()
     const appId = getAppId()
 
-    doSocketConnection(socket, channel, instanceId, appId, messageData, parentOrigin)
+    doSocketConnection(
+      socket,
+      channel,
+      instanceId,
+      appId,
+      messageData,
+      parentOrigin,
+    )
   }
 }
 
