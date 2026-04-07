@@ -52,9 +52,7 @@
         "intents": {
           "listensFor": {
             "ConformanceListener": {
-              "contexts": [
-                "fdc3.nothing"
-              ]
+              "contexts": ["fdc3.nothing"]
             }
           }
         }
@@ -153,16 +151,11 @@
           "listensFor": {
             "aTestingIntent": {
               "displayName": "A Testing Intent",
-              "contexts": [
-                "testContextX",
-                "testContextZ"
-              ]
+              "contexts": ["testContextX", "testContextZ"]
             },
             "sharedTestingIntent1": {
               "displayName": "Shared Testing Intent 1",
-              "contexts": [
-                "testContextX"
-              ]
+              "contexts": ["testContextX"]
             }
           }
         }
@@ -218,10 +211,7 @@
           "listensFor": {
             "sharedTestingIntent1": {
               "displayName": "Shared Testing Intent 1",
-              "contexts": [
-                "testContextX",
-                "testContextY"
-              ],
+              "contexts": ["testContextX", "testContextY"],
               "resultType": "testContextY"
             }
           }
@@ -278,9 +268,7 @@
           "listensFor": {
             "cTestingIntent": {
               "displayName": "C Testing Intent",
-              "contexts": [
-                "testContextX"
-              ],
+              "contexts": ["testContextX"],
               "resultType": "testContextZ"
             }
           }
@@ -337,9 +325,7 @@
           "listensFor": {
             "sharedTestingIntent2": {
               "displayName": "Shared Testing Intent 2",
-              "contexts": [
-                "testContextX"
-              ],
+              "contexts": ["testContextX"],
               "resultType": "testContextZ"
             }
           }
@@ -396,9 +382,7 @@
           "listensFor": {
             "sharedTestingIntent2": {
               "displayName": "Shared Testing Intent 2",
-              "contexts": [
-                "testContextY"
-              ],
+              "contexts": ["testContextY"],
               "resultType": "channel"
             }
           }
@@ -455,9 +439,7 @@
           "listensFor": {
             "sharedTestingIntent2": {
               "displayName": "Shared Testing Intent 2",
-              "contexts": [
-                "testContextY"
-              ],
+              "contexts": ["testContextY"],
               "resultType": "channel<testContextZ>"
             }
           }
@@ -514,9 +496,7 @@
           "listensFor": {
             "sharedTestingIntent2": {
               "displayName": "Shared Testing Intent 2",
-              "contexts": [
-                "testContextY"
-              ]
+              "contexts": ["testContextY"]
             }
           }
         }
@@ -572,9 +552,7 @@
           "listensFor": {
             "sharedTestingIntent2": {
               "displayName": "Shared Testing Intent 2",
-              "contexts": [
-                "testContextY"
-              ],
+              "contexts": ["testContextY"],
               "resultType": "testContextZ"
             }
           }
@@ -631,9 +609,7 @@
           "listensFor": {
             "sharedTestingIntent2": {
               "displayName": "Shared Testing Intent 2",
-              "contexts": [
-                "testContextY"
-              ],
+              "contexts": ["testContextY"],
               "resultType": "testContextZ"
             }
           }
@@ -690,9 +666,7 @@
           "listensFor": {
             "privateChannelIsPrivate": {
               "displayName": "J Testing Intent",
-              "contexts": [
-                "privateChannelDetails"
-              ],
+              "contexts": ["privateChannelDetails"],
               "resultType": "privateChannelIsPrivateResult"
             }
           }
@@ -749,9 +723,7 @@
           "listensFor": {
             "kTestingIntent": {
               "displayName": "K Testing Intent",
-              "contexts": [
-                "testContextX"
-              ],
+              "contexts": ["testContextX"],
               "resultType": "channel<testContextZ>"
             }
           }

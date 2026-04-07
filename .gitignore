@@ -16,4 +16,4 @@ test-results.xml
 cucumber-report.html
 .vite
 .vite-cache
-directory/generated
+packages/fdc3-example-apps/directory/generated

@@ -38,13 +38,12 @@ function discoverApps(baseDir: string) {
 
 /** This package (`packages/fdc3-example-apps`), not `process.cwd()` (workspace runs may use repo root). */
 const packageRoot = __dirname
-const sailRepoRoot = path.resolve(packageRoot, "..", "..")
 const frontEndAppsDir = path.join(packageRoot, "front-end-apps")
 const serverAppsDir = path.join(packageRoot, "server-apps")
 /** Shared browser + Node demo utilities (Vite may import outside each app `root`). */
 const securityDemoDir = path.join(packageRoot, "common", "src", "security-demo")
 const generatedAppdPath = path.join(
-  sailRepoRoot,
+  packageRoot,
   "directory",
   "generated",
   "fdc3-example-apps.json",
