@@ -5,6 +5,7 @@ import { BrowserTypes } from "@finos/fdc3"
 import { isWebConnectionProtocol1Hello } from "@finos/fdc3-schema/dist/generated/api/BrowserTypes"
 
 const appWindow = window.parent
+let parentOrigin: string | null = null
 
 function doSocketConnection(
   socket: Socket,
@@ -12,6 +13,7 @@ function doSocketConnection(
   instanceId: string,
   appId: string,
   messageData: BrowserTypes.WebConnectionProtocol1Hello,
+  targetOrigin: string | null,
 ) {
   socket.on("connect", async () => {
     try {
@@ -51,7 +53,7 @@ function doSocketConnection(
             channelSelectorUrl,
           },
         } as BrowserTypes.WebConnectionProtocol3Handshake,
-        "*",
+        targetOrigin || "*",
         [channel.port1],
       )
     } catch (e) {
@@ -83,6 +85,7 @@ const helloListener = (e: MessageEvent) => {
       messageData,
     )
 
+    parentOrigin = e.origin
     window.removeEventListener("message", helloListener)
 
     const socket = io()
@@ -90,7 +93,7 @@ const helloListener = (e: MessageEvent) => {
     const instanceId = getInstanceId()
     const appId = getAppId()
 
-    doSocketConnection(socket, channel, instanceId, appId, messageData)
+    doSocketConnection(socket, channel, instanceId, appId, messageData, parentOrigin)
   }
 }
 
