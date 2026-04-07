@@ -1,12 +1,12 @@
-import { createRoot } from 'react-dom/client';
-import { PolygonWidget } from './PolygonWidget';
+import { createRoot } from "react-dom/client"
+import { PolygonWidget } from "./PolygonWidget"
 
-const container = document.getElementById('app');
-const root = createRoot(container!);
+const container = document.getElementById("app")
+const root = createRoot(container!)
 
 function getQueryParameterMode() {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('mode') ?? 'news';
+  const urlParams = new URLSearchParams(window.location.search)
+  return urlParams.get("mode") ?? "news"
 }
 
-root.render(<PolygonWidget mode={getQueryParameterMode()} />);
+root.render(<PolygonWidget mode={getQueryParameterMode()} />)

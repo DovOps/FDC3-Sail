@@ -1,10 +1,15 @@
-import { World, setWorldConstructor } from '@cucumber/cucumber';
-import { TestFDC3ServerFactory } from '../support/TestFDC3ServerInstance';
-import { BasicDirectory } from '../../src/directory/BasicDirectory';
+import { World, setWorldConstructor } from "@cucumber/cucumber"
+import { TestFDC3ServerFactory } from "../support/TestFDC3ServerInstance"
+import { BasicDirectory } from "../../src/directory/BasicDirectory"
 
 export class CustomWorld extends World {
-  sc = new TestFDC3ServerFactory(this, [], new BasicDirectory([]), false).createInstance();
-  props: Record<string, any> = {};
+  sc = new TestFDC3ServerFactory(
+    this,
+    [],
+    new BasicDirectory([]),
+    false,
+  ).createInstance()
+  props: Record<string, any> = {}
 }
 
-setWorldConstructor(CustomWorld);
+setWorldConstructor(CustomWorld)

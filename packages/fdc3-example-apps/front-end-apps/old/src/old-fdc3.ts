@@ -1,4 +1,3 @@
-
 window.addEventListener("load", () => {
   const button = document.getElementById("connect")
   const el = document.getElementById("app")
@@ -14,4 +13,3 @@ window.addEventListener("load", () => {
     }
   })
 })
-

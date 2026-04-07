@@ -27,9 +27,7 @@
         "intents": {
           "listensFor": {
             "ViewNews": {
-              "contexts": [
-                "fdc3.instrument"
-              ],
+              "contexts": ["fdc3.instrument"],
               "displayName": "View News"
             }
           }

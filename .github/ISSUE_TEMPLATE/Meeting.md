@@ -38,4 +38,3 @@ Those logged in using the LF Meetings will be automatically tracked.
 - [ ]
 
 ## Meeting Minutes
-

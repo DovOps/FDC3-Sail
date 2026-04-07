@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs"
+import path from "path"
 
 /**
  * Microsoft Entra ID configuration (stored in `properties.json` next to this app).
@@ -7,37 +7,40 @@ import path from 'path';
  */
 
 export interface EntraConfig {
-  clientId: string;
-  authority: string;
-  redirectUri: string;
-  tenantId: string;
+  clientId: string
+  authority: string
+  redirectUri: string
+  tenantId: string
 }
 
 type PropertiesFile = {
-  port?: number;
-  entra?: Partial<EntraConfig>;
-};
+  port?: number
+  entra?: Partial<EntraConfig>
+}
 
 /** Server-only: read `properties.json` from the app root (same folder as `index.html`). */
 export function loadEntraConfig(appRoot: string): EntraConfig {
-  const propPath = path.join(appRoot, 'properties.json');
-  const raw = fs.readFileSync(propPath, 'utf-8');
-  const props = JSON.parse(raw) as PropertiesFile;
-  const e = props.entra;
+  const propPath = path.join(appRoot, "properties.json")
+  const raw = fs.readFileSync(propPath, "utf-8")
+  const props = JSON.parse(raw) as PropertiesFile
+  const e = props.entra
   if (!e?.clientId || !e.authority || !e.tenantId) {
     throw new Error(
-      `properties.json must include "entra": { "clientId", "authority", "tenantId" } (${propPath})`
-    );
+      `properties.json must include "entra": { "clientId", "authority", "tenantId" } (${propPath})`,
+    )
   }
   const redirectUri =
-    e.redirectUri ?? (props.port != null ? `http://localhost:${props.port}` : undefined);
+    e.redirectUri ??
+    (props.port != null ? `http://localhost:${props.port}` : undefined)
   if (!redirectUri) {
-    throw new Error(`properties.json: set "entra.redirectUri" or top-level "port" (${propPath})`);
+    throw new Error(
+      `properties.json: set "entra.redirectUri" or top-level "port" (${propPath})`,
+    )
   }
   return {
     clientId: e.clientId,
     authority: e.authority,
     tenantId: e.tenantId,
     redirectUri,
-  };
+  }
 }

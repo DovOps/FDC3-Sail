@@ -5,9 +5,9 @@
  * Supports both Socket.io and plain WebSocket implementations.
  */
 export interface Connection {
-    /** Send a message without expecting a response */
-    emit(event: string, data: any): void
+  /** Send a message without expecting a response */
+  emit(event: string, data: any): void
 
-    /** Shutdown the connection and clean up resources */
-    shutdown(): void
+  /** Shutdown the connection and clean up resources */
+  shutdown(): void
 }

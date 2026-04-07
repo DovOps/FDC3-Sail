@@ -1,4 +1,4 @@
-import { BrowserTypes } from '@finos/fdc3-schema';
+import { BrowserTypes } from "@finos/fdc3-schema"
 
 /**
  * This is a unique, long, unguessable string that identifies a particular instance of an app.
@@ -6,7 +6,7 @@ import { BrowserTypes } from '@finos/fdc3-schema';
  * It is important that this is unguessable as it is a shared secret used to identify the app
  * when reconnecting after navigation or refresh.
  */
-export type InstanceID = string;
+export type InstanceID = string
 
 export enum State {
   Pending /* App has started, but not completed FDC3 Handshake */,
@@ -20,12 +20,12 @@ export enum State {
  * if implementing your own FDC3ServerInstance.
  */
 export type AppRegistration = {
-  state: State;
-  appId: string;
-  instanceId: InstanceID;
-};
+  state: State
+  appId: string
+  instanceId: InstanceID
+}
 
 export type ReceivableMessage =
   | BrowserTypes.AppRequestMessage
   | BrowserTypes.WebConnectionProtocol4ValidateAppIdentity
-  | BrowserTypes.WebConnectionProtocol6Goodbye;
+  | BrowserTypes.WebConnectionProtocol6Goodbye

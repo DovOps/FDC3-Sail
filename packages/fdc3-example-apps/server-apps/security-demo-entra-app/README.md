@@ -35,6 +35,7 @@ To use this app with a real Microsoft Entra ID tenant, you need to:
 The app supports multiple configuration methods:
 
 #### Option A: Environment Variables (Recommended)
+
 Create a `.env` file in the entra-app directory:
 
 ```bash
@@ -46,23 +47,25 @@ ENTRA_REDIRECT_URI=http://localhost:4006
 ```
 
 #### Option B: Direct Configuration
+
 Update the values directly in `src/entra-config.ts`:
 
 ```typescript
 export const ENTRA_CONFIG: EntraConfig = {
-  clientId: 'your-client-id-here',
-  authority: 'https://login.microsoftonline.com/your-tenant-id-here',
-  redirectUri: 'http://localhost:4006',
-};
+  clientId: "your-client-id-here",
+  authority: "https://login.microsoftonline.com/your-tenant-id-here",
+  redirectUri: "http://localhost:4006",
+}
 ```
 
 #### Option C: Server Configuration Endpoint
-The server will read environment variables and serve them to the client via the `/api/config` endpoint. This ensures your credentials are not exposed in the client-side code.
 
+The server will read environment variables and serve them to the client via the `/api/config` endpoint. This ensures your credentials are not exposed in the client-side code.
 
 ## Running the App
 
 1. Start the development server:
+
    ```bash
    npm run start:entra-app
    ```

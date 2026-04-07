@@ -76,15 +76,16 @@ export function getEntraConfig(): EntraConfig {
 ## Step 5: Create Test Users
 
 ### Option A: Use Your Admin Account
+
 - You can test with your own Microsoft account (the one you used to create the tenant)
 
 ### Option B: Create Test Users (if you have admin rights)
+
 1. Go to "Users" in Entra ID
 2. Click "New user"
 3. Create test users for your organization
 
 ### Option C: Use Personal Microsoft Accounts
+
 - Modify the app registration to support "Personal Microsoft accounts only"
 - This allows any Microsoft account to sign in
-
-

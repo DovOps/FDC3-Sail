@@ -1,34 +1,34 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
-import { PolygonMode } from '../common';
-import NewsComponent from '../components/news/NewsComponent';
-import styles from './styles.module.css';
+import { PolygonMode } from "../common"
+import NewsComponent from "../components/news/NewsComponent"
+import styles from "./styles.module.css"
 export const newsMode: PolygonMode = {
-  name: 'news',
+  name: "news",
   endpoint: (state: object, apiKey: string) =>
     `https://api.polygon.io/v2/reference/news?apiKey=${apiKey}&ticker=${state}&limit=10`,
-  initialState: 'AAPL',
+  initialState: "AAPL",
   initialData: [],
   intents: [
     {
-      name: 'ViewNews',
+      name: "ViewNews",
       function: (context: any) => {
-        return context?.id?.ticker;
+        return context?.id?.ticker
       },
     },
   ],
   listeners: [
     {
-      name: 'fdc3.instrument',
+      name: "fdc3.instrument",
       function: (context: any) => {
-        return context?.id?.ticker;
+        return context?.id?.ticker
       },
     },
   ],
   dataRenderer: (data: any) => {
-    return <NewsComponent newsData={data.results ?? []} />;
+    return <NewsComponent newsData={data.results ?? []} />
   },
   stateRenderer: (state: any) => {
-    return <h2 className={styles.state}>{state}</h2>;
+    return <h2 className={styles.state}>{state}</h2>
   },
-};
+}

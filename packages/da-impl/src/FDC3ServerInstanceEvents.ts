@@ -1,24 +1,24 @@
-import { InstanceID } from './AppRegistration';
+import { InstanceID } from "./AppRegistration"
 
 /**
  * These are events not coming from another FDC3 application, but from the
  * FDC3ServerInstance itself.
  */
 export interface FDC3ServerInstanceEvent {
-  type: string;
+  type: string
 }
 
 /**
  * Used when the FDC3ServerInstance wants to notify the handler that the private channel has been disconnected.
  */
 export class PrivateChannelDisconnectServerInstanceEvent implements FDC3ServerInstanceEvent {
-  public type: string;
+  public type: string
 
   constructor(
     public instanceId: InstanceID,
-    public channelId: string
+    public channelId: string,
   ) {
-    this.type = 'privateChannelDisconnect';
+    this.type = "privateChannelDisconnect"
   }
 }
 
@@ -26,13 +26,13 @@ export class PrivateChannelDisconnectServerInstanceEvent implements FDC3ServerIn
  * Used when the FDC3ServerInstance wants to notify the handler that the current channel has changed.
  */
 export class ChannelChangedServerInstanceEvent implements FDC3ServerInstanceEvent {
-  public type: string;
+  public type: string
 
   constructor(
     public instanceId: InstanceID,
-    public channelId: string | null
+    public channelId: string | null,
   ) {
-    this.type = 'channelChanged';
+    this.type = "channelChanged"
   }
 }
 
@@ -40,9 +40,9 @@ export class ChannelChangedServerInstanceEvent implements FDC3ServerInstanceEven
  * Used when the FDC3ServerInstance is shutting down
  */
 export class ShutdownServerInstanceEvent implements FDC3ServerInstanceEvent {
-  public type: string;
+  public type: string
 
   constructor() {
-    this.type = 'shutdown';
+    this.type = "shutdown"
   }
 }

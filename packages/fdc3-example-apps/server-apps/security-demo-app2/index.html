@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="module" src="/src/sp2.ts"></script>
-    <link rel="stylesheet" href="/security-demo-styles.css">
+    <link rel="stylesheet" href="/security-demo-styles.css" />
   </head>
 
   <body>
@@ -34,14 +34,17 @@
 
     <script>
       function clearLog() {
-        const log = document.getElementById('log');
-        log.innerHTML = '<div class="log-entry info"><div class="log-timestamp">' + new Date().toLocaleTimeString() + '</div><div class="log-message">Log cleared</div></div>';
+        const log = document.getElementById("log")
+        log.innerHTML =
+          '<div class="log-entry info"><div class="log-timestamp">' +
+          new Date().toLocaleTimeString() +
+          '</div><div class="log-message">Log cleared</div></div>'
       }
 
       function updateStatus(status, message) {
-        const statusEl = document.getElementById('status');
-        statusEl.className = 'status-indicator status-' + status;
-        statusEl.innerHTML = '<span class="status-dot">●</span>' + message;
+        const statusEl = document.getElementById("status")
+        statusEl.className = "status-indicator status-" + status
+        statusEl.innerHTML = '<span class="status-dot">●</span>' + message
       }
     </script>
   </body>

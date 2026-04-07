@@ -7,7 +7,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   color: #333;
@@ -203,7 +203,7 @@ body {
 }
 
 .log-details {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.85rem;
   background: #f8f9fa;
   padding: 10px;
@@ -221,7 +221,7 @@ body {
 }
 
 .log-details.collapsed::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;

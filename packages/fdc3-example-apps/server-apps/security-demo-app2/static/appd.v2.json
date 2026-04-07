@@ -22,9 +22,7 @@
           "listensFor": {
             "demo.GetPrices": {
               "displayName": "Get Prices",
-              "contexts": [
-                "fdc3.instrument"
-              ],
+              "contexts": ["fdc3.instrument"],
               "resultType": "channel<fdc3.valuation>"
             }
           }

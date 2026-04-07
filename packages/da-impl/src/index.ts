@@ -1,4 +1,4 @@
-import { InstanceID, State, AppRegistration } from './AppRegistration';
+import { InstanceID, State, AppRegistration } from "./AppRegistration"
 import {
   ChannelState,
   ChannelType,
@@ -7,22 +7,27 @@ import {
   DesktopAgentEventListener,
   IntentListenerRegistration,
   FDC3ServerInstance,
-} from './FDC3ServerInstance';
-import { PendingApp, AppState } from './PendingApp';
-import { Directory, DirectoryApp, DirectoryIntent, WebAppDetails } from './directory/DirectoryInterface';
-import { BasicDirectory } from './directory/BasicDirectory';
-import { BroadcastHandler } from './handlers/BroadcastHandler';
-import { IntentHandler } from './handlers/IntentHandler';
-import { OpenHandler } from './handlers/OpenHandler';
-import { HeartbeatHandler } from './handlers/HeartbeatHandler';
-import { LogFunction, MessageHandler } from './handlers/MessageHandler';
-import { AbstractFDC3ServerInstance } from './AbstractFDC3ServerInstance';
+} from "./FDC3ServerInstance"
+import { PendingApp, AppState } from "./PendingApp"
+import {
+  Directory,
+  DirectoryApp,
+  DirectoryIntent,
+  WebAppDetails,
+} from "./directory/DirectoryInterface"
+import { BasicDirectory } from "./directory/BasicDirectory"
+import { BroadcastHandler } from "./handlers/BroadcastHandler"
+import { IntentHandler } from "./handlers/IntentHandler"
+import { OpenHandler } from "./handlers/OpenHandler"
+import { HeartbeatHandler } from "./handlers/HeartbeatHandler"
+import { LogFunction, MessageHandler } from "./handlers/MessageHandler"
+import { AbstractFDC3ServerInstance } from "./AbstractFDC3ServerInstance"
 import {
   FDC3ServerInstanceEvent,
   ChannelChangedServerInstanceEvent,
   PrivateChannelDisconnectServerInstanceEvent,
   ShutdownServerInstanceEvent,
-} from './FDC3ServerInstanceEvents';
+} from "./FDC3ServerInstanceEvents"
 
 export {
   type InstanceID,
@@ -53,4 +58,4 @@ export {
   PrivateChannelDisconnectServerInstanceEvent,
   ChannelChangedServerInstanceEvent,
   ShutdownServerInstanceEvent,
-};
+}

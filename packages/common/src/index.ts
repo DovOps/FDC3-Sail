@@ -16,28 +16,25 @@ let theClientState: ClientState | null = null
 let theAppState: DefaultAppState | null = null
 
 function ensureSetup() {
-
-    theServerState = theServerState ?? new ServerStateImpl();
-    theAppState = theAppState ?? new DefaultAppState();
-    theClientState = theClientState ?? new LocalStorageClientState();
-
-    (theClientState as LocalStorageClientState).init(theServerState)
-    theServerState.init(theClientState, theAppState)
-    theAppState.init(theServerState, theClientState)
-
+  theServerState = theServerState ?? new ServerStateImpl()
+  theAppState = theAppState ?? new DefaultAppState()
+  theClientState = theClientState ?? new LocalStorageClientState()
+  ;(theClientState as LocalStorageClientState).init(theServerState)
+  theServerState.init(theClientState, theAppState)
+  theAppState.init(theServerState, theClientState)
 }
 
 export function getServerState(): ServerState {
-    ensureSetup()
-    return theServerState!
+  ensureSetup()
+  return theServerState!
 }
 
 export function getAppState(): AppState {
-    ensureSetup()
-    return theAppState!
+  ensureSetup()
+  return theAppState!
 }
 
 export function getClientState(): ClientState {
-    ensureSetup()
-    return theClientState!
+  ensureSetup()
+  return theClientState!
 }

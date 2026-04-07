@@ -22,9 +22,7 @@
           "listensFor": {
             "CreateIdentityToken": {
               "displayName": "Create identity token",
-              "contexts": [
-                "fdc3.security.userRequest"
-              ],
+              "contexts": ["fdc3.security.userRequest"],
               "resultType": "fdc3.security.encryptedContext"
             }
           }
