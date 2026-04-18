@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { createRoot } from "react-dom/client"
-import {
-  Channel,
-  Context,
-  DesktopAgent,
-  getAgent,
-  Listener,
-} from "@robmoffat/fdc3"
+import { getAgent as getWebAgent } from "@morgan-stanley/fdc3-web"
+import { Channel, Context, DesktopAgent, Listener } from "@robmoffat/fdc3"
 import {
   connectRemoteHandlers,
   createJosePublicFDC3SecurityFromUrl,
@@ -114,7 +109,7 @@ export const EncryptedBroadcastComponent = () => {
 
     void (async () => {
       try {
-        agent = await getAgent()
+        agent = (await getWebAgent()) as unknown as DesktopAgent
         if (cancelled) return
 
         setStatus("Connecting secure backend (WebSocket)…")

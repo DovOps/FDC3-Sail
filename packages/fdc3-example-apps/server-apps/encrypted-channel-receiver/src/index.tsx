@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import { createRoot } from "react-dom/client"
+import { getAgent as getWebAgent } from "@morgan-stanley/fdc3-web"
 import {
   Channel,
   Context,
   ContextMetadata,
   DesktopAgent,
-  getAgent,
   Listener,
 } from "@robmoffat/fdc3"
 import {
@@ -111,7 +111,7 @@ export const EncryptedReceiveComponent = () => {
 
     void (async () => {
       try {
-        agent = await getAgent()
+        agent = (await getWebAgent()) as unknown as DesktopAgent
         if (cancelled) return
 
         setStatus("Connecting secure backend (WebSocket)…")

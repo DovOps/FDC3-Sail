@@ -14,7 +14,7 @@ import {
   Listener,
   PrivateChannel,
 } from "@finos/fdc3"
-import { getAgent as fdc3GetAgent } from "@finos/fdc3"
+import { getAgent as fdc3GetAgent } from "@morgan-stanley/fdc3-web"
 
 /**
  * An instance of this class is handed to every iframe or window loaded by electron.

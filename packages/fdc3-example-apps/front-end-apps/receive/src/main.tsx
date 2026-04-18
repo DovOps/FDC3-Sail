@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { getAgent } from "@robmoffat/fdc3-get-agent"
-import { DesktopAgent, Listener } from "@robmoffat/fdc3"
+import { getAgent } from "@morgan-stanley/fdc3-web"
+import { DesktopAgent, Listener } from "@finos/fdc3"
 import { createRoot } from "react-dom/client"
 import styles from "./main.module.css"
 

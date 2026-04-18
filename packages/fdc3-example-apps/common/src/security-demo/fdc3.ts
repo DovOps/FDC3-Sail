@@ -1,4 +1,5 @@
-import { DesktopAgent, getAgent } from "@robmoffat/fdc3"
+import type { DesktopAgent } from "@robmoffat/fdc3"
+import { getAgent as getWebAgent } from "@morgan-stanley/fdc3-web"
 import { createLogEntry, updateStatus } from "./logging"
 
 // Initialize FDC3 connection
@@ -10,7 +11,8 @@ export async function initializeFDC3(): Promise<DesktopAgent> {
       timestamp: new Date().toISOString(),
     })
 
-    const fdc3 = await getAgent()
+    // Keep legacy DesktopAgent typing for security-demo compatibility.
+    const fdc3 = (await getWebAgent()) as unknown as DesktopAgent
 
     updateStatus("connected", "Connected to FDC3 Agent")
     createLogEntry("success", "✅ Connected to FDC3 Agent successfully", {
