@@ -61,9 +61,10 @@ This branch migrates Sail demo app FDC3 agent acquisition to `@morgan-stanley/fd
 3. Aligned non-security demo app type imports to `@finos/fdc3`.
 4. Kept security-demo type compatibility (`@robmoffat/fdc3` types) but switched their runtime `getAgent` calls to `fdc3-web` using explicit compatibility casts.
 5. Added `@morgan-stanley/fdc3-web` dependency to Electron and aligned Electron `@finos/fdc3` to stable `^2.2.0` to satisfy peer constraints.
-6. Refactored TradingView/Polygon listener setup to a single lifecycle registration model (no state-driven re-registration loop).
-7. Added wildcard context listeners for `fdc3.instrument` parity handling.
-8. Added channel-context sync polling for resilience in demo scenarios.
+6. Aligned Sail core packages to stable `@finos/fdc3` (`packages/common`, `packages/da-impl`, `packages/web`) instead of beta-only pins.
+7. Refactored TradingView/Polygon listener setup to a single lifecycle registration model (no state-driven re-registration loop).
+8. Added wildcard context listeners for `fdc3.instrument` parity handling.
+9. Added channel-context sync polling for resilience in demo scenarios.
 
 ### TradingView optional context-driven symbol updates
 
@@ -87,6 +88,45 @@ This is intended to improve symbol refresh behavior when context listener delive
 - Sail DA internals remain Sail-native (`packages/web`, `packages/da-impl`); this branch focuses on app-side agent acquisition and wiring.
 - Security features are still provided by `@robmoffat/fdc3-security`, so some security app files retain `@robmoffat/fdc3` types for compatibility, even though runtime `getAgent` now routes through `fdc3-web`.
 - A complete security-stack type migration would require a `fdc3-security` package alignment to `@finos/fdc3` types.
+
+## Soak Test Results
+
+Validated in this branch:
+
+- `npm install` succeeds.
+- `npm run build` succeeds for all workspaces.
+- `npm run lint` succeeds.
+- `npx tsc -p packages/fdc3-example-apps/tsconfig.json --noEmit` succeeds.
+- Runtime startup smoke:
+  - `npm run web:dev` starts Sail server at `http://localhost:8090`.
+  - `npm run examples:dev` starts all discovered demo apps.
+  - HTTP checks passed for Sail root (`302` redirect to `/html/index.html`) and all demo app ports.
+  - `GET /polygon-key` returns `200`.
+  - generated app directory file exists and was populated.
+
+Not fully validated yet:
+
+- End-to-end user-driven cross-app intent/broadcast workflows in an automated browser script.
+- Electron-hosted interaction flows in this branch.
+
+Known unrelated test-suite gap:
+
+- `npm test` currently fails in `packages/da-impl` due missing `@finos/fdc3-testing` module in this standalone repo setup.
+
+## What Cannot Be Ported Yet (Without Additional Work)
+
+An explicit attempt was made to replace all remaining `@robmoffat/fdc3*` imports in security demo code with FINOS equivalents.
+That change failed type-check due structural/type-contract mismatches between:
+
+- `@finos/fdc3` `DesktopAgent`/`Channel`/`IntentHandler`
+- and `@robmoffat/fdc3-security` expected `@robmoffat/fdc3-standard` types.
+
+Practical impact:
+
+- `fdc3-security` extension points (`connectRemoteHandlers`, handler subclass overrides like `remoteIntentHandler`, `handleRemoteChannel`) currently require legacy-compatible type surfaces.
+- Full removal of `@robmoffat/fdc3` from security demo code is blocked until either:
+  1. `@robmoffat/fdc3-security` is updated to FINOS type contracts, or
+  2. a compatibility shim layer is introduced and maintained around every security integration boundary.
 
 ## Recommended Next Step
 
