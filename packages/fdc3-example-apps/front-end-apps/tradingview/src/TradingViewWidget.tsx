@@ -1,5 +1,5 @@
 // TradingViewWidget.jsx
-import { getAgent } from "@robmoffat/fdc3"
+import { getAgent } from "@morgan-stanley/fdc3-web"
 import { useEffect, useRef, memo, useState } from "react"
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -23,29 +23,168 @@ export const TradingViewWidget = ({ mode }: { mode: string }) => {
   const container: any = useRef()
   const modeProps = MODES.find((m) => m.name === mode) ?? MODES[0]
 
-  const [state, setState] = useState(modeProps.initialState)
+  const [state, setState] = useState<string>(modeProps.initialState)
 
   useEffect(() => {
-    getAgent().then((fdc3) => {
-      modeProps.intents.forEach((intent) => {
-        fdc3.addIntentListener(intent.name, (context) => {
-          const newState = intent.function(context, state)
-          setState(() => newState)
-          console.log("new state", newState)
-        })
-      })
+    setState(modeProps.initialState)
+  }, [mode, modeProps.initialState])
 
-      setTimeout(() => {
-        modeProps.listeners.forEach((listener) => {
-          fdc3.addContextListener(listener.name, (context) => {
-            const newState = listener.function(context, state)
-            setState(() => newState)
-            console.log("new state", newState)
-          })
+  useEffect(() => {
+    let cancelled = false
+    let unregisters: Array<() => void> = []
+    let syncInterval: number | undefined
+    let channelChangedListener: any
+
+    const shouldSyncFromChannel = (() => {
+      const value = new URLSearchParams(window.location.search).get(
+        "listenChannelContext",
+      )
+      if (value == null) {
+        return true
+      }
+      return value !== "false"
+    })()
+
+    const normalizeTicker = (value: unknown): string | null => {
+      if (typeof value !== "string") {
+        return null
+      }
+      const trimmed = value.trim().toUpperCase()
+      if (!trimmed) {
+        return null
+      }
+      if (trimmed.includes(":")) {
+        const suffix = trimmed.split(":").pop()?.trim().toUpperCase()
+        return suffix ?? null
+      }
+      return trimmed
+    }
+
+    const applyNextState = (candidate: unknown) => {
+      const normalized = normalizeTicker(candidate)
+      if (normalized == null) {
+        return
+      }
+      setState((previous: string) =>
+        previous === normalized ? previous : normalized,
+      )
+    }
+
+    const applyDerivedState = (
+      transform: (context: any, state: any) => any,
+      context: any,
+    ) => {
+      setState((previous: string) => {
+        const candidate = transform(context, previous)
+        const normalized = normalizeTicker(candidate)
+        if (normalized == null) {
+          return previous
+        }
+        return previous === normalized ? previous : normalized
+      })
+    }
+
+    const syncCurrentChannelContext = async (fdc3: any) => {
+      if (typeof fdc3?.getCurrentChannel !== "function") {
+        return
+      }
+      try {
+        const channel = await fdc3.getCurrentChannel()
+        if (typeof channel?.getCurrentContext !== "function") {
+          return
+        }
+        const context = await channel.getCurrentContext("fdc3.instrument")
+        const ticker = context?.id?.ticker
+        applyNextState(ticker)
+      } catch (error) {
+        console.warn(
+          "[tradingview] failed to sync current channel context",
+          error,
+        )
+      }
+    }
+
+    const connect = async () => {
+      try {
+        const fdc3 = await getAgent()
+        if (cancelled) {
+          return
+        }
+
+        for (const intent of modeProps.intents) {
+          const listener = await fdc3.addIntentListener(
+            intent.name,
+            (context: any) => {
+              applyDerivedState(intent.function, context)
+            },
+          )
+          if (typeof listener?.unsubscribe === "function") {
+            unregisters.push(() => listener.unsubscribe())
+          }
+        }
+
+        for (const listenerDef of modeProps.listeners) {
+          const listener = await fdc3.addContextListener(
+            listenerDef.name,
+            (context: any) => {
+              applyDerivedState(listenerDef.function, context)
+            },
+          )
+          if (typeof listener?.unsubscribe === "function") {
+            unregisters.push(() => listener.unsubscribe())
+          }
+        }
+
+        const wildcard = await fdc3.addContextListener((context: any) => {
+          const contextType = context?.type
+          if (!contextType) {
+            return
+          }
+          modeProps.listeners
+            .filter((listenerDef) => listenerDef.name === contextType)
+            .forEach((listenerDef) =>
+              applyDerivedState(listenerDef.function, context),
+            )
         })
-      }, 2000)
-    })
-  }, [state])
+        if (typeof wildcard?.unsubscribe === "function") {
+          unregisters.push(() => wildcard.unsubscribe())
+        }
+
+        if (shouldSyncFromChannel) {
+          await syncCurrentChannelContext(fdc3)
+
+          channelChangedListener = () => {
+            void syncCurrentChannelContext(fdc3)
+          }
+          const channelChangeSubscription = await fdc3.addEventListener(
+            "userChannelChanged",
+            channelChangedListener,
+          )
+          if (typeof channelChangeSubscription?.unsubscribe === "function") {
+            unregisters.push(() => channelChangeSubscription.unsubscribe())
+          }
+
+          syncInterval = window.setInterval(() => {
+            void syncCurrentChannelContext(fdc3)
+          }, 1500)
+        }
+      } catch (error) {
+        console.error("[tradingview] failed to connect to desktop agent", error)
+      }
+    }
+
+    void connect()
+
+    return () => {
+      cancelled = true
+      unregisters.forEach((fn) => fn())
+      unregisters = []
+      if (syncInterval != null) {
+        window.clearInterval(syncInterval)
+      }
+      channelChangedListener = undefined
+    }
+  }, [mode, modeProps])
 
   useEffect(() => {
     let script: HTMLScriptElement | null = null
@@ -67,7 +206,7 @@ export const TradingViewWidget = ({ mode }: { mode: string }) => {
     script.type = "text/javascript"
     script.async = true
     // nosemgrep: javascript.browser.security.insecure-document-method.insecure-document-method
-    script.innerHTML = modeProps.innerHTML(state)
+    script.innerHTML = modeProps.innerHTML(state as any)
   }, [state])
 
   return (
