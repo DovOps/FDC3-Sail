@@ -1,6 +1,15 @@
 import { TradingViewMode } from "../common"
+import { resolveTradingViewSymbolFromContext } from "./symbol-compat"
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+
+const ensureSymbolInfoSymbol = (
+  symbol: string | undefined,
+): string | undefined => {
+  if (!symbol) return undefined
+  const normalized = symbol.trim().toUpperCase()
+  return normalized.includes(":") ? normalized : undefined
+}
 
 export const symbolInfoMode: TradingViewMode = {
   name: "symbol-info",
@@ -8,7 +17,7 @@ export const symbolInfoMode: TradingViewMode = {
     "https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js",
   innerHTML: (state: object) => `{
           "autosize": true,
-          "symbol": "NASDAQ:${state}",
+          "symbol": "${state}",
           "interval": "D",
           "timezone": "Etc/UTC",
           "theme": "light",
@@ -18,18 +27,22 @@ export const symbolInfoMode: TradingViewMode = {
           "calendar": false,
           "support_host": "https://www.tradingview.com"
         }`,
-  initialState: "TSLA",
+  initialState: "NASDAQ:TSLA",
   intents: [
     {
       name: "ViewInstrument",
       function: (context: any) => {
-        return context?.id?.ticker
+        return ensureSymbolInfoSymbol(
+          resolveTradingViewSymbolFromContext(context),
+        )
       },
     },
     {
       name: "ViewChart",
       function: (context: any) => {
-        return context?.id?.ticker
+        return ensureSymbolInfoSymbol(
+          resolveTradingViewSymbolFromContext(context),
+        )
       },
     },
   ],
@@ -37,7 +50,9 @@ export const symbolInfoMode: TradingViewMode = {
     {
       name: "fdc3.instrument",
       function: (context: any) => {
-        return context?.id?.ticker
+        return ensureSymbolInfoSymbol(
+          resolveTradingViewSymbolFromContext(context),
+        )
       },
     },
   ],

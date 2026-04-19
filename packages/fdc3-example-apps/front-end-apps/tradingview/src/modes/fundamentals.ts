@@ -1,6 +1,15 @@
 import { TradingViewMode } from "../common"
+import { resolveTradingViewSymbolFromContext } from "./symbol-compat"
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+
+const ensureFundamentalsSymbol = (
+  symbol: string | undefined,
+): string | undefined => {
+  if (!symbol) return undefined
+  const normalized = symbol.trim().toUpperCase()
+  return normalized.includes(":") ? normalized : undefined
+}
 
 export const fundamentalsMode: TradingViewMode = {
   name: "fundamentals",
@@ -16,18 +25,22 @@ export const fundamentalsMode: TradingViewMode = {
                     "symbol": "${state}",
                     "locale": "en"
                 }`,
-  initialState: "TSLA",
+  initialState: "NASDAQ:TSLA",
   intents: [
     {
       name: "ViewInstrument",
       function: (context: any) => {
-        return context?.id?.ticker
+        return ensureFundamentalsSymbol(
+          resolveTradingViewSymbolFromContext(context),
+        )
       },
     },
     {
       name: "ViewChart",
       function: (context: any) => {
-        return context?.id?.ticker
+        return ensureFundamentalsSymbol(
+          resolveTradingViewSymbolFromContext(context),
+        )
       },
     },
   ],
@@ -35,7 +48,9 @@ export const fundamentalsMode: TradingViewMode = {
     {
       name: "fdc3.instrument",
       function: (context: any) => {
-        return context?.id?.ticker
+        return ensureFundamentalsSymbol(
+          resolveTradingViewSymbolFromContext(context),
+        )
       },
     },
   ],
