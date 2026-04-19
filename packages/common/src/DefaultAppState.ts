@@ -1,10 +1,17 @@
 import { AppOpenDetails, AppState } from "./AppState"
 import { AppHosting } from "./app-hosting"
 import { DirectoryApp, WebAppDetails, State } from "@finos/fdc3-sail-da-impl"
-import { SailAppStateArgs } from "./message-types"
+import {
+  APP_HELLO,
+  AppHelloArgs,
+  FDC3_APP_EVENT,
+  FDC3_DA_EVENT,
+  SailAppStateArgs,
+} from "./message-types"
 import { WebConnectionProtocol1Hello } from "@finos/fdc3-schema/dist/generated/api/BrowserTypes"
 import { ServerState } from "./ServerState"
 import { ClientState } from "./ClientState"
+import { io, Socket } from "socket.io-client"
 
 export class DefaultAppState implements AppState {
   windowInformation = new Map<Window, string>()
@@ -12,6 +19,7 @@ export class DefaultAppState implements AppState {
   callbacks: (() => void)[] = []
   cs: ClientState | null = null
   ss: ServerState | null = null
+  private appBridgeSockets = new Map<string, Socket>()
 
   getAppState(instanceId: string): State | undefined {
     return this.states.find((x) => x.instanceId == instanceId)?.state
@@ -75,23 +83,26 @@ export class DefaultAppState implements AppState {
           const appD = this.getDirectoryAppForUrl(data.payload.identityUrl)
           const appId = appD?.appId
           this.getInstanceIdForWindow(source)
-            .then((instanceId) => {
+            .then(async (instanceId) => {
               if (appD && instanceId) {
-                source.postMessage(
-                  {
-                    type: "WCP2LoadUrl",
-                    meta: {
-                      connectionAttemptUuid: data.meta.connectionAttemptUuid,
-                      timestamp: new Date(),
-                    },
-                    payload: {
-                      iframeUrl:
-                        window.location.origin +
-                        `/html/embed.html?connectionAttemptUuid=${data.meta.connectionAttemptUuid}&desktopAgentId=${cs.getUserSessionID()}&instanceId=${instanceId}&appId=${appId ?? "unknown"}`,
-                    },
-                  },
+                const wcp3Sent = await this.tryDirectWcp3Handshake(
+                  source,
                   origin,
+                  data.meta.connectionAttemptUuid,
+                  instanceId,
+                  appId ?? "unknown",
+                  cs.getUserSessionID(),
                 )
+                if (!wcp3Sent) {
+                  this.sendWcp2LoadUrl(
+                    source,
+                    origin,
+                    data.meta.connectionAttemptUuid,
+                    cs.getUserSessionID(),
+                    instanceId,
+                    appId ?? "unknown",
+                  )
+                }
               } else {
                 console.error(
                   "Illegal handshake attempt",
@@ -111,6 +122,141 @@ export class DefaultAppState implements AppState {
 
   registerAppWindow(window: Window, instanceId: string): void {
     this.windowInformation.set(window, instanceId)
+  }
+
+  private sendWcp2LoadUrl(
+    source: Window,
+    origin: string,
+    connectionAttemptUuid: string,
+    userSessionId: string,
+    instanceId: string,
+    appId: string,
+  ): void {
+    source.postMessage(
+      {
+        type: "WCP2LoadUrl",
+        meta: {
+          connectionAttemptUuid,
+          timestamp: new Date(),
+        },
+        payload: {
+          iframeUrl:
+            window.location.origin +
+            `/html/embed.html?connectionAttemptUuid=${connectionAttemptUuid}&desktopAgentId=${userSessionId}&instanceId=${instanceId}&appId=${appId}`,
+        },
+      },
+      origin,
+    )
+  }
+
+  private async tryDirectWcp3Handshake(
+    source: Window,
+    origin: string,
+    connectionAttemptUuid: string,
+    instanceId: string,
+    appId: string,
+    userSessionId: string,
+  ): Promise<boolean> {
+    const socket = io()
+    const previous = this.appBridgeSockets.get(instanceId)
+    if (previous) {
+      previous.disconnect()
+      this.appBridgeSockets.delete(instanceId)
+    }
+
+    return new Promise<boolean>((resolve) => {
+      const channel = new MessageChannel()
+      let settled = false
+      const finish = (result: boolean) => {
+        if (settled) {
+          return
+        }
+        settled = true
+        window.clearTimeout(timeout)
+        if (!result) {
+          channel.port2.close()
+          socket.disconnect()
+        }
+        resolve(result)
+      }
+
+      socket.on("connect_error", (error) => {
+        console.warn("Direct WCP3 bridge connect error", error)
+        finish(false)
+      })
+
+      socket.on("connect", async () => {
+        try {
+          socket.on(FDC3_DA_EVENT, (data: unknown) => {
+            channel.port2.postMessage(data)
+          })
+
+          channel.port2.onmessage = (event: MessageEvent) => {
+            if (
+              event.data &&
+              typeof event.data === "object" &&
+              (event.data as { type?: string }).type === "WCP6Goodbye"
+            ) {
+              channel.port2.close()
+              socket.disconnect()
+              this.appBridgeSockets.delete(instanceId)
+              return
+            }
+            socket.emit(FDC3_APP_EVENT, event.data, instanceId)
+          }
+
+          const hosting = await socket.emitWithAck(APP_HELLO, {
+            userSessionId,
+            instanceId,
+            appId,
+          } as AppHelloArgs)
+
+          const suffix = `?desktopAgentId=${userSessionId}&instanceId=${instanceId}`
+          const intentResolverUrl =
+            hosting == AppHosting.Tab
+              ? window.location.origin +
+                `/html/ui/intent-resolver.html${suffix}`
+              : undefined
+          const channelSelectorUrl =
+            hosting == AppHosting.Tab
+              ? window.location.origin +
+                `/html/ui/channel-selector.html${suffix}`
+              : undefined
+
+          source.postMessage(
+            {
+              type: "WCP3Handshake",
+              meta: {
+                connectionAttemptUuid,
+                timestamp: new Date(),
+              },
+              payload: {
+                fdc3Version: "2.2",
+                intentResolverUrl,
+                channelSelectorUrl,
+              },
+            },
+            origin,
+            [channel.port1],
+          )
+
+          this.appBridgeSockets.set(instanceId, socket)
+          finish(true)
+        } catch (error) {
+          console.warn("Direct WCP3 bridge setup failed", error)
+          finish(false)
+        }
+      })
+
+      const timeout = window.setTimeout(() => {
+        console.warn("Direct WCP3 bridge setup timed out", {
+          instanceId,
+          appId,
+          connectionAttemptUuid,
+        })
+        finish(false)
+      }, 8000)
+    })
   }
 
   /**
