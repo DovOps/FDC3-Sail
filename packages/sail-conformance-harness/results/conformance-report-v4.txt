@@ -1,0 +1,208 @@
+passes: 31failures: 64duration: 305.03s
+fdc3.basicGetAgent
+(GetAgentAPI) Method is callable
+fdc3.basicCL1
+(BasicCL1) Method is callable
+fdc3.basicCL2
+(BasicCL2) Returns listener object
+fdc3.basicIL1
+(BasicIL1) Method is callable
+fdc3.basicGI1
+(BasicGI1) Returns ImplementationMetadata object
+fdc3.basicAC1
+(BasicAC1) Returns Channel object
+fdc3.basicUC1
+(BasicUC1) Channel object is valid
+fdc3.basicJC1
+(BasicJC1) getCurrentChannel should retrieve 'null' or a channel object depending upon whether the channel has been joined or not
+fdc3.basicRI1
+(BasicRI1) application should be able to raise an intent by passing Intent name and gets a promise in return 979ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintentforcontext
+CauseIntentDeliveryFailed
+fdc3.basicRI2
+(BasicRI2) application should be able to raise an intent for some item by passing context and gets a promise in return
+fdc3.open
+(AOpensB3) Can open app B from app A with no context and AppIdentifier as config.target 3380ms
+(AFailsToOpenB3) Receive AppNotFound error when targeting non-existent app AppMetadata (AppIdentifier) as config.target
+(AOpensBWithContext3) Can open app B from app A with context and AppMetadata (AppIdentifier) as target, app B adds generic listener 22ms
+AppTimeout
+(AOpensBWithSpecificContext) Can open app B from app A with context and AppIdentifier as config.target and app B is expecting context 19ms
+AppTimeout
+(AOpensBMultipleListen) Can open app B from app A with context and AppIdentifier as config.target but app B has multiple listeners added before the correct one 23ms
+AppTimeout
+(AOpensBWithWrongContext) Received App timeout when opening app B with fake context, app b listening for different context
+(AOpensB4) Can open app B from app A with appId as config.target, and recieves the same appId and also contains InstanceId 4213ms
+fdc3.getInfo
+Method is callable
+(GetInfo1) Returns a valid ImplementationMetadata object
+(GetInfo2) Returns a valid ImplementationMetadata object 2109ms
+AppTimeout
+fdc3.getAppMetadata
+Method is callable
+(GetAppMetadata) Valid metadata object 27ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/Metadata#appmetadata
+Cause: The AppMetadata object contains an invalid property 
+Documentation: https://fdc3.finos.org/docs/api/ref/Metadata#appmetadata
+Cause: : expected [ 'appId', 'instanceId', 'name', …(8) ] to include 'desktopAgent'
+(AppInstanceMetadata) App instance metadata is valid 78ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/Metadata#appmetadata
+Cause: The AppMetadata object contains an invalid property 
+Documentation: https://fdc3.finos.org/docs/api/ref/Metadata#appmetadata
+Cause: : expected [ 'appId', 'instanceId', 'name', …(8) ] to include 'desktopAgent'
+fdc3.appChannels
+(ACBasicUsage1) Should receive context when app a adds a listener and app B broadcasts to the same app channel 125ms
+AppTimeout
+(ACBasicUsage2) Should receive context when app B broadcasts context to an app channel before A retrieves current context 62ms
+AppTimeout
+(ACFilteredContext1) Should only receive the listened context when app B broadcasts multiple contexts to the same app channel 96ms
+AppTimeout
+(ACUnsubscribe) Should not receive context when unsubscribing an app channel before app B broadcasts to that channel 92ms
+AppTimeout
+(ACFilteredContext2) Should not receive context when app B broadcasts context to a different app channel 148ms
+AppTimeout
+(ACFilteredContext3) Should not receive context when retrieving two different app channels before app B broadcasts the listened type to the first channel that was retrieved 169ms
+AppTimeout
+(ACFilteredContext4) Should not receive context when retrieving two different app channels before the second app broadcasts the listened type to the first channel that was retrieved 179ms
+AppTimeout
+(ACContextHistoryTyped) Should receive both contexts when app B broadcasts both contexts to the same app channel and A gets current context for each type 179ms
+AppTimeout
+(ACContextHistoryMultiple) Should retrieve the last broadcast context item when app B broadcasts a context with multiple history items to the same app channel and A gets current context 177ms
+AppTimeout
+(ACContextHistoryLast) Should retrieve the last broadcast context item when app B broadcasts two different contexts to the same app channel and A gets current context 145ms
+AppTimeout
+fdc3.userChannels
+(UCBasicUsage1) Should receive context when adding a listener then joining a user channel before app B broadcasts context to the same channel 278ms
+AppTimeout
+(UCBasicUsage2) Should receive context when joining a user channel then adding a context listener before app B broadcasts context to the same channel 356ms
+AppTimeout
+(UCBasicUsage3) Should receive context when app B joins then broadcasts context to a user channel before A adds a listener and then joins the same channel 152ms
+AppTimeout
+(UCBasicUsage4) Should receive context when app B joins then broadcasts context to a user channel before A joins and listens on the same channel 118ms
+AppTimeout
+(UCFilteredUsage1) Should receive context when app A adds a listener before joining a user channel and app B broadcasts the listened type to the same user channel 311ms
+AppTimeout
+(UCFilteredUsage2 ) Should receive context when app A joins a user channel before adding a listener and app B broadcasts the listened type to the same user channel 519ms
+AppTimeout
+(UCFilteredUsage3) Should receive context when B broadcasts to a user channel before A listens for the broadcast type and joins the same channel as B 135ms
+AppTimeout
+(UCFilteredUsage4) Should receive context when B broadcasts to a user channel before A joins the same channel and listens for the broadcast type 165ms
+AppTimeout
+(UCFilteredUsage5) Should receive multiple contexts when app B broadcasts the listened types to the same user channel 728ms
+AppTimeout
+(UCFilteredUsage6) Should not receive context when A & B join different user channels and app B broadcasts a listened type 916ms
+AppTimeout
+(UCFilteredUsageUnsubscribe) Should not receive context when unsubscribing a user channel before app B broadcasts the listened type to that channel 1632ms
+AppTimeout
+(UCFilteredUsageChange) Should not receive context when joining two different user channels before app B broadcasts the listened type to the first channel that was joined 2235ms
+AppTimeout
+(UCFilteredUsageLeave) Should not receive context after leaving a user channel 1296ms
+AppTimeout
+(UCFilteredUsageNoJoin) Should not receive context when A doesn't join a user channel before app B broadcasts the listened type to that channel 597ms
+AppTimeout
+(UCFilteredUsageJoin) getCurrentChannel retrieves the channel that was joined 1908ms
+fdc3.findInstances
+(FindInstances) valid appID when opening multiple instances of the same app 704ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findinstances
+Cause: IntentDeliveryFailed
+fdc3.findIntent
+(FindIntentAppD) Should find intent 'aTestingIntent' belonging only to app intent-a 106ms
+Unexpected AppIntent.apps.length. Expected 1, got 2
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected [ …(2) ] to have a length of 1 but got 2
+(FindNonExistentIntentAppD) Should throw NoAppsFound error when intent does not exist 108ms
+(FindIntentAppDRightContext) Should find intent 'aTestingIntent' belonging only to app intent-a with context 'testContextX' 116ms
+Unexpected AppIntent.apps.length. Expected 1, got 2
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected [ …(2) ] to have a length of 1 but got 2
+(FindIntentAppDWrongContext) Should throw NoAppsFound error when intent exists but context does not 104ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'assert.fail()'
+(FindIntentAppDMultiple1) Should find intent 'sharedTestingIntent2' belonging to multiple apps (intent-a & intent-b) 112ms
+(FindIntentAppDMultiple2) Should find intent 'sharedTestingIntent2' belonging to multiple apps (intent-a & intent-b) filtered by specific context 'testContextY' 102ms
+(FindIntentAppDByResultSingle) Should find intent 'cTestingIntent' belonging only to app intent-c with context 'testContextX' and result type 'testContextZ' 102ms
+(FindIntentAppDByResultSingleNullContext) Should find intent 'cTestingIntent' belonging only to app intent-c with a null context and result type 'testContextZ' 119ms
+(FindIntentAppDByResultMultiple) Should find intent 'sharedTestingIntent1' belonging only to app intent-b with context 'testContextX' and result type 'testContextY' 79ms
+(FindIntentAppDByResultChannel1) Should find intent 'sharedTestingIntent2' belonging only to apps intent-e and itent-f with context 'testContextY' and result type 'channel 118ms
+(FindIntentAppDByResultChannel2) Should find intent 'sharedTestingIntent2' belonging only to app intent-c with context 'testContextY' and result type 'channel<testContextZ>' 96ms
+fdc3.findIntentsByContext
+(FindIntentByContextSingleContext) Should find intents by context 'testContextX' 118ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintentsbycontextexpected [ …(2) ] to have a length of 1 but got 2
+(FindIntentByContextWrongIntentAppD) Passing an invalid context causes a NoAppsFound error to be thrown 96ms
+fdc3.raiseIntent
+(RaiseIntentSingleResolve) Should start app intent-a when raising intent 'aTestingIntent1' with context 'testContextX' 608ms
+(RaiseIntentTargetedAppResolve) Should start app intent-b when raising intent 'sharedTestingIntent1' with context 'testContextX' 9547ms
+IntentDeliveryFailed
+(RaiseIntentTargetedInstanceResolveOpen) Should target running instance of intent-a app when raising intent 'aTestingIntent1' with context 'testContextX' after opening intent-a app 5882ms
+No context received. Listener expected to receive context of type intent-app-a-opened from mock app
+(RaiseIntentTargetedInstanceResolveFindInstances) Should start app intent-a when targeted by raising intent 'aTestingIntent1' with context 'testContextX' 1558ms
+expected 8 to equal 1
+(PrivateChannelsAreNotAppChannels) Cannot create an app channel using a private channel id 11368ms
+IntentDeliveryFailed
+(PrivateChannelsLifecycleEvents) PrivateChannel lifecycle events are triggered when expected 10832ms
+IntentDeliveryFailed
+fdc3.raiseIntent (Result)
+(RaiseIntentVoidResult0secs) App A receives a void IntentResult 415ms
+UserCancelledResolution
+(RaiseIntentVoidResult5secs) App A receives a void IntentResult after a 5 second delay 411ms
+UserCancelledResolution
+(RaiseIntentContextResult0secs) IntentResult resolves to testContextY 441ms
+UserCancelledResolution
+(RaiseIntentContextResult5secs) IntentResult resolves to testContextY instance after a 5 second delay 381ms
+UserCancelledResolution
+(RaiseIntentChannelResult) IntentResult resolves to a Channel object 11648ms
+IntentDeliveryFailed
+(RaiseIntentPrivateChannelResult) IntentResult resolves to a private Channel object 12440ms
+IntentDeliveryFailed
+(RaiseIntentVoidResult61secs) App A receives a void IntentResult after a 61 second delay 619ms
+UserCancelledResolution
+(RaiseIntentContextResult61secs) IntentResult resolves to testContextY instance after a 61 second delay 640ms
+UserCancelledResolution
+(RaiseIntentContextResultMetadata) getResultMetadata returns DA-generated metadata for a context result 363ms
+UserCancelledResolution
+(RaiseIntentContextWithMetadataResult) getResult returns plain Context and getResultMetadata returns merged metadata when handler returns ContextWithMetadata 736ms
+expected '' to not equal ''
+(RaiseIntentChannelResultMetadata) getResultMetadata returns DA-generated metadata for a channel result 1962ms
+expected '' to not equal ''
+(RaiseIntentVoidResultMetadata) getResultMetadata returns DA-generated metadata for a void result 444ms
+UserCancelledResolution
+fdc3.raiseIntent (throws error)
+(RaiseIntentFailedResolve) Should fail to raise intent when targeted app intent-a, context 'testContextY' and intent 'aTestingIntent' do not correlate 155ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintent
+Cause: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'UserCancelledResolution'
+(RaiseIntentFailTargetedAppInstanceResolve1) Should fail to raise intent when targeted app intent-a instance, context 'testContextY', intent 'aTestingIntent' and AppIdentifier IntentAppAId do not correlate 492ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintent
+Cause: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'IntentDeliveryFailed'
+(RaiseIntentFailTargetedAppInstanceResolve2) Should fail to raise intent when targeted app intent-a, context 'testContextY', intent 'aTestingIntent' and AppIdentifier IntentAppAId with instanceId property NonExistentInstanceId do not correlate 195ms
+(RaiseIntentFailTargetedAppResolve1) Should fail to raise intent when targeted app intent-a, context 'testContextY', intent 'aTestingIntent' and AppIdentifier IntentAppAId do not correlate 191ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintent
+Cause: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'Expected the raised intent to be reje…'
+(RaiseIntentFailTargetedAppResolve2) Should fail to raise intent when targeting non-existent app id, context 'testContextY', intent 'aTestingIntent' and throw TargetAppUnavailable error 146ms
+(RaiseIntentFailTargetedAppResolve3) Should fail to raise intent when targeting an app that doesn't add an intent listener, context 'testContextY', intent 'sharedTestingIntent2' and throw IntentDeliveryFailed error 16521ms
+(RaiseIntentFailTargetedAppResolve4) Should fail to raise intent when targeting an app that doesn't add an intent listener of the matching type, context 'testContextY', intent 'sharedTestingIntent2' and throw IntentDeliveryFailed error 17902ms
+App didn't return close context within 1 sec
+fdc3.contextMetadata
+(UCContextMetadataOnBroadcast) Should receive ContextMetadata with source and timestamp when context is broadcast on a user channel 3057ms
+AppTimeout
+(UCContextMetadataTraceId) Should receive app-provided traceId in ContextMetadata on user channel broadcast 2589ms
+AppTimeout
+(UCContextMetadataSignatureCustom) Should receive app-provided signature and custom fields in ContextMetadata on user channel broadcast 2727ms
+AppTimeout
+(ACContextMetadataOnBroadcast) Should receive ContextMetadata with source and timestamp when context is broadcast on an app channel 445ms
+AppTimeout
+(ACGetCurrentContextWithMetadata) getCurrentContextWithMetadata should return context and metadata from an app channel 313ms
+AppTimeout
+(ACGetCurrentContextWithMetadataNull) getCurrentContextWithMetadata should return null on an empty channel 313ms
+fdc3.intentContextMetadata
+(IntentContextMetadata) Should receive ContextMetadata with source and timestamp when an intent is raised 15417ms
+IntentDeliveryFailed
+(IntentContextMetadataWithAppMetadata) Should forward app-provided traceId, signature and custom in ContextMetadata on raised intent 4172ms
+IntentDeliveryFailed

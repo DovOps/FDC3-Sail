@@ -1,0 +1,22 @@
+{
+  "name": "@finos/sail-electron",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "",
+  "main": "dist/main.cjs",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "vp pack",
+    "watch": "vp pack --watch",
+    "dev": "npm run build && electron .",
+    "typecheck": "tsc",
+    "lint": "vp lint .",
+    "format": "vp fmt --check .",
+    "validate": "npm run typecheck && npm run lint && npm run format"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@finos/fdc3": "^2.2.3",
+    "electron": "^42.4.0"
+  }
+}

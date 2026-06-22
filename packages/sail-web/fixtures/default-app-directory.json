@@ -1,0 +1,368 @@
+{
+  "applications": [
+    {
+      "appId": "pms",
+      "name": "Portfolio Management System",
+      "title": "Portfolio Management System",
+      "description": "Asset allocation and rebalancing platform for portfolio managers. Creates allocation instructions and sends orders to execution systems via FDC3 CreateOrder intent.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:5174/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "GetAllPortfolios": {
+              "contexts": [],
+              "description": "Returns all portfolios as fdc3.portfolios context (optional incoming context)."
+            },
+            "ViewPortfolio": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Returns portfolios that hold the given instrument (uses context id.ticker)."
+            },
+            "ViewHoldings": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Same behavior as ViewPortfolio; returns matching portfolios as fdc3.portfolios context."
+            }
+          },
+          "raises": {
+            "CreateOrder": ["fdc3.order"],
+            "ViewInstrument": ["fdc3.instrument"]
+          }
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.instrument"],
+          "listensFor": []
+        }
+      },
+      "icons": [
+        {
+          "src": "/icons/directory/pms-icon.svg"
+        }
+      ],
+      "screenshots": [
+        {
+          "src": "/icons/directory/pms-preview.svg"
+        }
+      ],
+      "version": "1.0.0",
+      "publisher": "EW"
+    },
+    {
+      "appId": "oms",
+      "name": "Order Management System",
+      "title": "Order Management System",
+      "description": "Trade execution and order routing platform for traders. Receives orders via FDC3 CreateOrder intent, executes trades, and broadcasts trade confirmations on user channels.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:5175/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "CreateOrder": {
+              "contexts": ["fdc3.order"],
+              "description": "Receives order instructions from portfolio management systems and other trading applications"
+            },
+            "ViewOrders": {
+              "contexts": ["fdc3.order", "fdc3.instrument"],
+              "description": "Display and manage existing orders, optionally filtered by instrument"
+            },
+            "ViewInstrument": {
+              "contexts": ["fdc3.instrument"],
+              "description": "View orders and trading activity for a specific financial instrument"
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.trade", "fdc3.instrument"],
+          "listensFor": ["fdc3.instrument"]
+        }
+      },
+      "icons": [
+        {
+          "src": "/icons/directory/oms-icon.svg"
+        }
+      ],
+      "screenshots": [
+        {
+          "src": "/icons/directory/oms-preview.svg"
+        }
+      ],
+      "version": "1.0.0",
+      "publisher": "EW"
+    },
+    {
+      "appId": "charts",
+      "name": "Advanced Chart",
+      "title": "Advanced Chart",
+      "description": "TradingView advanced chart. Listens for ViewChart and ViewAnalysis with fdc3.instrument.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:5176/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewChart": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Open or update the chart for the given instrument (id.ticker)."
+            },
+            "ViewAnalysis": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Same as ViewChart for this demo: focus chart on the instrument."
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        }
+      },
+      "icons": [
+        {
+          "src": "/icons/directory/charts-icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "EW"
+    },
+    {
+      "appId": "news",
+      "name": "News",
+      "title": "News",
+      "description": "TradingView symbol news timeline. Listens for ViewNews and ViewAnalysis; ViewNews handler may return fdc3.news with headline summaries when Finnhub is configured.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:5178/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewNews": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Show news for the instrument; optional fdc3.news result with top headlines."
+            },
+            "ViewAnalysis": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Show news timeline focused on the instrument."
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        }
+      },
+      "icons": [
+        {
+          "src": "/icons/directory/news-icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "EW"
+    },
+    {
+      "appId": "heatmap",
+      "name": "Stock Heatmap",
+      "title": "Stock Heatmap",
+      "description": "TradingView S&P 500 sector heatmap. Listens for ViewChart and ViewAnalysis for workspace integration.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:5188/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewChart": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Open heatmap in context of chart workflows."
+            },
+            "ViewAnalysis": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Open heatmap alongside analysis workflows."
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        }
+      },
+      "icons": [
+        {
+          "src": "/icons/directory/heatmap-icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "EW"
+    },
+    {
+      "appId": "sentiment",
+      "name": "Technical Analysis",
+      "title": "Technical Analysis",
+      "description": "TradingView technical analysis widget. Listens for ViewAnalysis with fdc3.instrument.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:5190/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewAnalysis": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Show technical analysis for the instrument."
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        }
+      },
+      "icons": [
+        {
+          "src": "/icons/directory/sentiment-icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "EW"
+    },
+    {
+      "appId": "financials",
+      "name": "Financials",
+      "title": "Financials",
+      "description": "TradingView financials widget. Listens for ViewAnalysis with fdc3.instrument.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:5191/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewAnalysis": {
+              "contexts": ["fdc3.instrument"],
+              "description": "Show financials for the instrument."
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        }
+      },
+      "icons": [
+        {
+          "src": "/icons/directory/financials-icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "EW"
+    },
+    {
+      "appId": "voice-agent",
+      "name": "Voice Agent",
+      "title": "Voice Agent",
+      "description": "Voice assistant UI served by Bun (packages/voice-agent, default port 3000). Not wired to FDC3 intents in this repo.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:3000/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {},
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        }
+      },
+      "icons": [
+        {
+          "src": "/icons/directory/voice-agent-icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "EW"
+    },
+    {
+      "appId": "minimal-example",
+      "name": "Minimal FDC3 Heartbeat Demo",
+      "title": "Minimal FDC3 Heartbeat Demo",
+      "description": "Minimal FDC3 getAgent heartbeat test app.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:4175/"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {},
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        }
+      },
+      "icons": [],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "EW"
+    }
+  ],
+  "message": "FDC3 App Directory Configuration for Trading Applications",
+  "metadata": {
+    "version": "2.0",
+    "type": "fdc3.appDirectory",
+    "created": "2025-05-28T00:00:00Z",
+    "description": "FDC3 application directory for runnable web apps in this workspace: trading (PMS, OMS), TradingView embeds, and voice agent. Excludes workspace libraries (@ew/shared) and the headless ai-agent package (no dev URL).",
+    "workflow": {
+      "description": "Portfolio managers use PMS to create allocation instructions, which raise CreateOrder intents that are handled by OMS. Charts, news, heatmap, sentiment, and financials apps handle ViewChart, ViewNews, and ViewAnalysis for fdc3.instrument context. voice-agent is listed for discovery and manual launch; it does not register FDC3 intents here.",
+      "apps": [
+        "pms",
+        "oms",
+        "charts",
+        "news",
+        "heatmap",
+        "sentiment",
+        "financials",
+        "voice-agent",
+        "minimal-example"
+      ],
+      "intents": [
+        "GetAllPortfolios",
+        "ViewPortfolio",
+        "ViewHoldings",
+        "CreateOrder",
+        "ViewOrders",
+        "ViewInstrument",
+        "ViewChart",
+        "ViewNews",
+        "ViewAnalysis"
+      ],
+      "contexts": ["fdc3.portfolios", "fdc3.order", "fdc3.trade", "fdc3.instrument", "fdc3.news"]
+    }
+  }
+}

@@ -1,0 +1,69 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* FDC3 Sail brand palette — derived from logo cyan (#50C9EF, #21D7FF) and ocean navy */
+:root {
+  --sail-cyan: #50c9ef;
+  --sail-cyan-bright: #21d7ff;
+  --sail-ocean: #1a4d6e;
+  --sail-ocean-deep: #0c2d42;
+  --sail-navy: #0a1f2e;
+
+  --ifm-color-primary: #2eb0df;
+  --ifm-color-primary-dark: #289ec9;
+  --ifm-color-primary-darker: #2595be;
+  --ifm-color-primary-darkest: #1f7b9d;
+  --ifm-color-primary-light: #43b8e3;
+  --ifm-color-primary-lighter: #4ebde5;
+  --ifm-color-primary-lightest: #6fcaeb;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(26, 77, 110, 0.08);
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-footer-background-color: var(--sail-ocean-deep);
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: var(--sail-cyan);
+  --ifm-color-primary-dark: #3bb5dc;
+  --ifm-color-primary-darker: #36abd0;
+  --ifm-color-primary-darkest: #2c8dab;
+  --ifm-color-primary-light: #64d0f2;
+  --ifm-color-primary-lighter: #6ed4f3;
+  --ifm-color-primary-lightest: #8bddf6;
+  --docusaurus-highlighted-code-line-bg: rgba(80, 201, 239, 0.12);
+  --ifm-background-color: var(--sail-navy);
+  --ifm-navbar-background-color: var(--sail-ocean-deep);
+  --ifm-footer-background-color: #061018;
+}
+
+.hero--primary {
+  --ifm-hero-background-color: var(--sail-ocean-deep);
+  --ifm-hero-text-color: #ffffff;
+}
+
+.button--secondary {
+  --ifm-button-background-color: rgba(255, 255, 255, 0.12);
+  --ifm-button-border-color: rgba(255, 255, 255, 0.65);
+  --ifm-button-color: #ffffff;
+}
+
+.button--secondary:hover {
+  --ifm-button-background-color: rgba(255, 255, 255, 0.22);
+  --ifm-button-border-color: #ffffff;
+  --ifm-button-color: #ffffff;
+}
+
+[data-theme="dark"] .button--secondary {
+  --ifm-button-background-color: rgba(255, 255, 255, 0.08);
+  --ifm-button-border-color: var(--sail-cyan);
+  --ifm-button-color: var(--sail-cyan-bright);
+}
+
+[data-theme="dark"] .button--secondary:hover {
+  --ifm-button-background-color: rgba(80, 201, 239, 0.15);
+  --ifm-button-border-color: var(--sail-cyan-bright);
+  --ifm-button-color: var(--sail-cyan-bright);
+}

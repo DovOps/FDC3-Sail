@@ -1,0 +1,20 @@
+{
+  "_comment": "TODO: Fix sail-ui type checking - currently disabled due to rootDir/declaration issues",
+  "extends": "../../tsconfig.root.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "jsx": "react-jsx",
+    "moduleDetection": "force",
+    "paths": {
+      "@/*": ["../../packages/sail-ui/src/*"],
+      "@finos/sail-ui": ["../../packages/sail-ui/src/index.ts"],
+      "@finos/sail-ui/*": ["../../packages/sail-ui/src/*"]
+    },
+    "outDir": "./dist",
+    "types": ["vitest/globals"],
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*", "../../packages/sail-ui/src/**/*", "tests/**/*", "playwright.config.ts"],
+  "exclude": ["node_modules", "dist", "vitest.config.ts"]
+}

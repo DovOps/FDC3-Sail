@@ -2,35 +2,76 @@
   "name": "@finos/fdc3-sail",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24.x.x",
+    "npm": ">=11.x.x"
+  },
   "scripts": {
     "clean": "npm run clean --workspaces",
-    "build": "npm run build --workspaces --if-present",
-    "dev": "npm run dev --workspaces --if-present",
-    "web": "npm run build && npm run web --workspaces --if-present",
-    "example-apps": "npm run dev --workspace=packages/example-apps",
-    "electron": "concurrently \"npm run web\" \"npm run electron --workspaces --if-present \"",
-    "start:all": "concurrently \"npm run web\" \"npm run example-apps\" \"npm run electron\"",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "build": "npm run build -w @finos/sail-desktop-agent -w @finos/sail-platform-api -w @finos/sail-ui -w @finos/sail-web -w @finos/sail-conformance-harness -w @finos/sail-server",
+    "dev": "concurrently -n agent,api,server,web \"npm run dev -w @finos/sail-desktop-agent\" \"npm run dev -w @finos/sail-platform-api\" \"npm run dev -w @finos/sail-server\" \"npm run dev -w @finos/sail-web\"",
+    "dev:desktop": "concurrently -n server,electron \"npm run dev -w @finos/sail-server\" \"npm run dev -w @finos/sail-electron\"",
+    "dev:conformance": "npm run dev -w @finos/sail-conformance-harness",
+    "docs:dev": "npm run start --workspace=@finos/sail-docs",
+    "docs:build": "npm run build --workspace=@finos/sail-docs",
+    "lint": "vp lint .",
+    "lint:fix": "vp lint . --fix",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vp test",
+    "test:watch": "vp test --watch",
+    "test:report": "vp test run -- --reporter=default --reporter=html",
+    "test:cucumber": "npm run test:cucumber -w @finos/sail-desktop-agent",
+    "test:cucumber:ci": "npm run test:cucumber:ci -w @finos/sail-desktop-agent",
+    "test:cucumber:channels": "npm run test:cucumber:channels -w @finos/sail-desktop-agent",
+    "test:cucumber:intents": "npm run test:cucumber:intents -w @finos/sail-desktop-agent",
+    "test:cucumber:apps": "npm run test:cucumber:apps -w @finos/sail-desktop-agent",
+    "format": "vp fmt --check .",
+    "format:fix": "vp fmt .",
+    "validate": "npm run format && npm run lint && npm run typecheck && npm run build && npm run docs:build && npm test -- --run && npm run test:cucumber",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "release:publish": "npm run build -w @finos/sail-desktop-agent -w @finos/sail-platform-api && changeset publish",
+    "prepare": "vp config"
+  },
+  "overrides": {
+    "copy-webpack-plugin": {
+      "serialize-javascript": "7.0.5"
+    },
+    "css-minimizer-webpack-plugin": {
+      "serialize-javascript": "7.0.5"
+    },
+    "sockjs": {
+      "uuid": "11.1.1"
+    },
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitest": "4.1.9"
   },
   "workspaces": [
-    "packages/shared",
-    "packages/web",
-    "packages/preload",
-    "packages/electron",
-    "packages/socket",
-    "packages/example-apps"
+    "packages/sail-desktop-agent",
+    "packages/sail-ui",
+    "packages/sail-platform-api",
+    "packages/sail-web",
+    "packages/sail-conformance-harness",
+    "packages/sail-electron",
+    "packages/sail-server",
+    "website"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
-    "concurrently": "^8.2.2",
-    "eslint": "^9.22.0",
+    "@changesets/cli": "^2.31.0",
+    "@types/node": "^25.x.x",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.x",
+    "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/ui": "^4.0.18",
+    "concurrently": "^10.0.3",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "globals": "^16.3.0",
+    "knip": "^5.82.1",
+    "rimraf": "^6.0.1",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.26.1"
-  },
-  "dependencies": {
-    "wait-on": "^8.0.3"
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitest": "4.1.9",
+    "vite-plus": "latest"
   }
 }

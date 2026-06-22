@@ -1,0 +1,154 @@
+passes: 15failures: 45duration: 154.82s
+fdc3.basicGetAgent
+(GetAgentAPI) Method is callable
+fdc3.basicCL1
+(BasicCL1) Method is callable
+fdc3.basicCL2
+(BasicCL2) Returns listener object 2013ms
+fdc3.basicIL1
+(BasicIL1) Method is callable 4ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#addintentlistener
+CauseTargetInstanceUnavailable
+fdc3.basicGI1
+(BasicGI1) Returns ImplementationMetadata object
+fdc3.basicAC1
+(BasicAC1) Returns Channel object
+fdc3.basicUC1
+(BasicUC1) Channel object is valid
+fdc3.basicJC1
+(BasicJC1) getCurrentChannel should retrieve 'null' or a channel object depending upon whether the channel has been joined or not
+fdc3.basicRI1
+(BasicRI1) application should be able to raise an intent by passing Intent name and gets a promise in return 4ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintentforcontext
+CauseIntentDeliveryFailed
+fdc3.basicRI2
+(BasicRI2) application should be able to raise an intent for some item by passing context and gets a promise in return 2ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintentforcontext
+CauseIntentDeliveryFailed
+fdc3.open
+(AOpensB3) Can open app B from app A with no context and AppIdentifier as config.target 20003ms
+Timeout of 20000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+(AFailsToOpenB3) Receive AppNotFound error when targeting non-existent app AppMetadata (AppIdentifier) as config.target
+(AOpensBWithContext3) Can open app B from app A with context and AppMetadata (AppIdentifier) as target, app B adds generic listener 15018ms
+AppTimeout
+(AOpensBWithSpecificContext) Can open app B from app A with context and AppIdentifier as config.target and app B is expecting context 15011ms
+AppTimeout
+(AOpensBMultipleListen) Can open app B from app A with context and AppIdentifier as config.target but app B has multiple listeners added before the correct one 15012ms
+AppTimeout
+(AOpensBWithWrongContext) Received App timeout when opening app B with fake context, app b listening for different context
+(AOpensB4) Can open app B from app A with appId as config.target, and recieves the same appId and also contains InstanceId 20005ms
+Timeout of 20000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+fdc3.getInfo
+Method is callable
+(GetInfo1) Returns a valid ImplementationMetadata object
+(GetInfo2) Returns a valid ImplementationMetadata object 10002ms
+Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves.
+fdc3.getAppMetadata
+Method is callable
+(GetAppMetadata) Valid metadata object 3ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/Metadata#appmetadata
+Cause: The AppMetadata object contains an invalid property 
+Documentation: https://fdc3.finos.org/docs/api/ref/Metadata#appmetadata
+Cause: : expected [ 'appId', 'instanceId', 'name', …(8) ] to include 'desktopAgent'
+(AppInstanceMetadata) App instance metadata is valid 40ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/Metadata#appmetadata
+Cause: The AppMetadata object contains an invalid property 
+Documentation: https://fdc3.finos.org/docs/api/ref/Metadata#appmetadata
+Cause: : expected [ 'appId', 'instanceId', 'name', …(8) ] to include 'desktopAgent'
+fdc3.appChannels
+(ACBasicUsage1) Should receive context when app a adds a listener and app B broadcasts to the same app channel 15023ms
+AppTimeout
+fdc3.userChannels
+(UCBasicUsage1) Should receive context when adding a listener then joining a user channel before app B broadcasts context to the same channel 15025ms
+AppTimeout
+fdc3.findInstances
+(FindInstances) valid appID when opening multiple instances of the same app 38ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findinstances
+Cause: At least one AppIdentifier object is missing from the AppIdentifier array returned after calling fdc3.findInstances(app: AppIdentifier)
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findinstances
+Cause: 
+fdc3.findIntent
+(FindIntentAppD) Should find intent 'aTestingIntent' belonging only to app intent-a 6ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'aTestingIntent', …(1) } to deeply equal { name: 'aTestingIntent', …(1) }
+(FindNonExistentIntentAppD) Should throw NoAppsFound error when intent does not exist
+(FindIntentAppDRightContext) Should find intent 'aTestingIntent' belonging only to app intent-a with context 'testContextX' 2ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'aTestingIntent', …(1) } to deeply equal { name: 'aTestingIntent', …(1) }
+(FindIntentAppDWrongContext) Should throw NoAppsFound error when intent exists but context does not 2ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'assert.fail()'
+(FindIntentAppDMultiple1) Should find intent 'sharedTestingIntent2' belonging to multiple apps (intent-a & intent-b) 2ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'sharedTestingIntent2', …(1) } to deeply equal { name: 'sharedTestingIntent2', …(1) }
+(FindIntentAppDMultiple2) Should find intent 'sharedTestingIntent2' belonging to multiple apps (intent-a & intent-b) filtered by specific context 'testContextY' 2ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'sharedTestingIntent2', …(1) } to deeply equal { name: 'sharedTestingIntent2', …(1) }
+(FindIntentAppDByResultSingle) Should find intent 'cTestingIntent' belonging only to app intent-c with context 'testContextX' and result type 'testContextZ' 1ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'cTestingIntent', …(1) } to deeply equal { name: 'cTestingIntent', …(1) }
+(FindIntentAppDByResultSingleNullContext) Should find intent 'cTestingIntent' belonging only to app intent-c with a null context and result type 'testContextZ' 1ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'cTestingIntent', …(1) } to deeply equal { name: 'cTestingIntent', …(1) }
+(FindIntentAppDByResultMultiple) Should find intent 'sharedTestingIntent1' belonging only to app intent-b with context 'testContextX' and result type 'testContextY' 5ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'sharedTestingIntent1', …(1) } to deeply equal { name: 'sharedTestingIntent1', …(1) }
+(FindIntentAppDByResultChannel1) Should find intent 'sharedTestingIntent2' belonging only to apps intent-e and itent-f with context 'testContextY' and result type 'channel 1ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'sharedTestingIntent2', …(1) } to deeply equal { name: 'sharedTestingIntent2', …(1) }
+(FindIntentAppDByResultChannel2) Should find intent 'sharedTestingIntent2' belonging only to app intent-c with context 'testContextY' and result type 'channel<testContextZ>' 1ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintent
+Cause: expected { name: 'sharedTestingIntent2', …(1) } to deeply equal { name: 'sharedTestingIntent2', …(1) }
+fdc3.findIntentsByContext
+(FindIntentByContextSingleContext) Should find intents by context 'testContextX' 6ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintentsbycontextexpected [ …(3) ] to have a length of 1 but got 3
+(FindIntentByContextWrongIntentAppD) Passing an invalid context causes a NoAppsFound error to be thrown 2ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#findintentsbycontext: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'assert.fail()'
+fdc3.raiseIntent
+(RaiseIntentSingleResolve) Should start app intent-a when raising intent 'aTestingIntent1' with context 'testContextX' 6ms
+IntentDeliveryFailed
+fdc3.raiseIntent (Result)
+(RaiseIntentVoidResult0secs) App A receives a void IntentResult 4ms
+IntentDeliveryFailed
+fdc3.raiseIntent (throws error)
+(RaiseIntentFailedResolve) Should fail to raise intent when targeted app intent-a, context 'testContextY' and intent 'aTestingIntent' do not correlate 3ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintent
+Cause: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'IntentDeliveryFailed'
+(RaiseIntentFailTargetedAppInstanceResolve1) Should fail to raise intent when targeted app intent-a instance, context 'testContextY', intent 'aTestingIntent' and AppIdentifier IntentAppAId do not correlate 20ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintent
+Cause: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'TargetInstanceUnavailable'
+(RaiseIntentFailTargetedAppInstanceResolve2) Should fail to raise intent when targeted app intent-a, context 'testContextY', intent 'aTestingIntent' and AppIdentifier IntentAppAId with instanceId property NonExistentInstanceId do not correlate
+(RaiseIntentFailTargetedAppResolve1) Should fail to raise intent when targeted app intent-a, context 'testContextY', intent 'aTestingIntent' and AppIdentifier IntentAppAId do not correlate 4ms
+
+Documentation: https://fdc3.finos.org/docs/api/ref/DesktopAgent#raiseintent
+Cause: expected AssertionError{ …(6) } to have property 'message' of 'NoAppsFound', but got 'IntentDeliveryFailed'
+(RaiseIntentFailTargetedAppResolve2) Should fail to raise intent when targeting non-existent app id, context 'testContextY', intent 'aTestingIntent' and throw TargetAppUnavailable error
+(RaiseIntentFailTargetedAppResolve3) Should fail to raise intent when targeting an app that doesn't add an intent listener, context 'testContextY', intent 'sharedTestingIntent2' and throw IntentDeliveryFailed error 1006ms
+App didn't return close context within 1 sec
+(RaiseIntentFailTargetedAppResolve4) Should fail to raise intent when targeting an app that doesn't add an intent listener of the matching type, context 'testContextY', intent 'sharedTestingIntent2' and throw IntentDeliveryFailed error 1076ms
+App didn't return close context within 1 sec
+fdc3.contextMetadata
+(UCContextMetadataOnBroadcast) Should receive ContextMetadata with source and timestamp when context is broadcast on a user channel 15038ms
+AppTimeout
+fdc3.intentContextMetadata
+(IntentContextMetadata) Should receive ContextMetadata with source and timestamp when an intent is raised 4ms
