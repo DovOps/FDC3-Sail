@@ -73,6 +73,12 @@ interface WorkspaceActions {
 
 export interface WorkspaceStore extends WorkspaceState, WorkspaceActions {}
 
+export interface WorkspaceStoreOptions {
+  initialWorkspaces?: Workspace[]
+  activeWorkspaceId?: string
+  storageName?: string
+}
+
 // Helper function to generate UUIDs
 const generateUUID = (): string => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -108,84 +114,107 @@ const createDefaultWorkspace = (): Workspace => {
   }
 }
 
+type PersistedPanel = Panel
+
+interface PersistedTab extends Omit<Tab, "panels"> {
+  panels: [string, PersistedPanel][] | Record<string, PersistedPanel>
+}
+
+interface PersistedWorkspace extends Omit<Workspace, "layout"> {
+  layout: Omit<Grid, "tabs"> & {
+    tabs: [string, PersistedTab][] | Record<string, PersistedTab>
+  }
+}
+
+interface PersistedWorkspaceState {
+  state: Omit<WorkspaceState, "workspaces"> & {
+    workspaces: [string, PersistedWorkspace][] | Record<string, PersistedWorkspace>
+  }
+  version?: number
+}
+
+const entriesFromPersisted = <T>(
+  value: [string, T][] | Record<string, T> | Map<string, T> | undefined
+): [string, T][] => {
+  if (!value) return []
+  if (value instanceof Map) return Array.from(value.entries())
+  if (Array.isArray(value)) return value
+  return Object.entries(value)
+}
+
+const deserializeWorkspaces = (
+  workspaces: PersistedWorkspaceState["state"]["workspaces"]
+): Map<string, Workspace> => {
+  return new Map(
+    entriesFromPersisted(workspaces).map(([workspaceId, workspace]) => [
+      workspaceId,
+      {
+        ...workspace,
+        layout: {
+          ...workspace.layout,
+          tabs: new Map(
+            entriesFromPersisted(workspace.layout.tabs).map(([tabId, tab]) => [
+              tabId,
+              {
+                ...tab,
+                panels: new Map(entriesFromPersisted(tab.panels)),
+              },
+            ])
+          ),
+        },
+      },
+    ])
+  )
+}
+
+const serializeWorkspaces = (
+  workspaces: Map<string, Workspace>
+): [string, PersistedWorkspace][] => {
+  return Array.from(workspaces.entries()).map(([workspaceId, workspace]) => [
+    workspaceId,
+    {
+      ...workspace,
+      layout: {
+        ...workspace.layout,
+        tabs: Array.from(workspace.layout.tabs.entries()).map(
+          ([tabId, tab]): [string, PersistedTab] => [
+            tabId,
+            {
+              ...tab,
+              panels: Array.from(tab.panels.entries()),
+            },
+          ]
+        ),
+      },
+    },
+  ])
+}
+
 // Custom storage implementation to handle Map serialization
 const mapStorage = {
   getItem: (name: string) => {
     const str = localStorage.getItem(name)
     if (!str) return null
     try {
-      const parsed = JSON.parse(str) as { state: { workspaces: Map<string, Workspace> } }
-      const deserializedState = {
+      const parsed = JSON.parse(str) as PersistedWorkspaceState
+      return {
         ...parsed,
         state: {
           ...parsed.state,
-          workspaces: new Map(),
+          workspaces: deserializeWorkspaces(parsed.state.workspaces),
         },
       }
-
-      // Deserialize workspaces
-      if (parsed.state.workspaces) {
-        for (const [workspaceId, workspace] of parsed.state.workspaces) {
-          const deserializedWorkspace = {
-            ...workspace,
-            layout: {
-              ...workspace.layout,
-              tabs: new Map(),
-            },
-          }
-
-          // Deserialize tabs
-          if (workspace.layout.tabs) {
-            for (const [tabId, tab] of workspace.layout.tabs) {
-              deserializedWorkspace.layout.tabs.set(tabId, {
-                ...tab,
-                panels: new Map(tab.panels || []),
-              })
-            }
-          }
-
-          deserializedState.state.workspaces.set(workspaceId, deserializedWorkspace)
-        }
-      }
-
-      return deserializedState
     } catch {
       return null
     }
   },
   setItem: (name: string, value: unknown) => {
-    const serializedState = value as { state: { workspaces: Map<string, Workspace> } }
-    const newSerializedState: { state: { workspaces: Map<string, Workspace> } } = {
+    const serializedState = value as { state: WorkspaceState; version?: number }
+    const newSerializedState: PersistedWorkspaceState = {
       ...serializedState,
       state: {
         ...serializedState.state,
-        workspaces: new Map(
-          Array.from(serializedState.state.workspaces.entries()).map(([workspaceId, workspace]) => [
-            workspaceId,
-            {
-              ...workspace,
-              layout: {
-                ...workspace.layout,
-                tabs: new Map(
-                  Array.from(workspace.layout.tabs.entries()).map(([tabId, tab]) => [
-                    tabId,
-                    {
-                      ...tab,
-                      panels: new Map(
-                        Array.from(tab.panels.entries()).map(([panelId, panel]) => [
-                          panelId,
-                          {
-                            ...panel,
-                          },
-                        ])
-                      ),
-                    },
-                  ])
-                ),
-              },
-            },
-          ])
-        ),
+        workspaces: serializeWorkspaces(serializedState.state.workspaces),
       },
     }
 
@@ -199,16 +228,27 @@ const mapStorage = {
 // Enable Map/Set support for Immer
 enableMapSet()
 
-export const createWorkspaceStore = () =>
+export const createWorkspaceStore = (options: WorkspaceStoreOptions = {}) =>
   create<WorkspaceStore>()(
     persist(
       immer<WorkspaceStore>((set, get) => {
         const defaultWorkspace = createDefaultWorkspace()
+        const initialWorkspaces =
+          options.initialWorkspaces && options.initialWorkspaces.length > 0
+            ? options.initialWorkspaces
+            : [defaultWorkspace]
+        const initialWorkspaceMap = new Map(
+          initialWorkspaces.map(workspace => [workspace.uuid, workspace])
+        )
+        const initialActiveWorkspaceId =
+          options.activeWorkspaceId && initialWorkspaceMap.has(options.activeWorkspaceId)
+            ? options.activeWorkspaceId
+            : initialWorkspaces[0]?.uuid || ""
 
         return {
           // Initial state
-          workspaces: new Map([[defaultWorkspace.uuid, defaultWorkspace]]),
-          activeWorkspaceId: defaultWorkspace.uuid,
+          workspaces: initialWorkspaceMap,
+          activeWorkspaceId: initialActiveWorkspaceId,
 
           // Workspace management
           createWorkspace: (name: string) => {
@@ -402,7 +442,7 @@ export const createWorkspaceStore = () =>
         }
       }),
       {
-        name: "workspace-store",
+        name: options.storageName ?? "workspace-store",
         storage: mapStorage,
       }
     )
