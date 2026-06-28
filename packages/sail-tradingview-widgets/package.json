@@ -1,0 +1,26 @@
+{
+  "name": "@finos/sail-tradingview-widgets",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vp build",
+    "dev": "vp dev --host 0.0.0.0 --port 4023",
+    "test:run": "vp test run",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@finos/fdc3": "^2.2.3",
+    "@vitejs/plugin-react": "^5.0.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.x",
+    "typescript": "^5.8.2",
+    "vite-plus": "latest",
+    "vitest": "4.1.9"
+  }
+}

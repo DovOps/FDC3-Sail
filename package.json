@@ -9,8 +9,8 @@
   },
   "scripts": {
     "clean": "npm run clean --workspaces",
-    "build": "npm run build -w @finos/sail-desktop-agent -w @finos/sail-platform-api -w @finos/sail-ui -w @finos/sail-web -w @finos/sail-conformance-harness -w @finos/sail-server",
-    "dev": "concurrently -n agent,api,server,web \"npm run dev -w @finos/sail-desktop-agent\" \"npm run dev -w @finos/sail-platform-api\" \"npm run dev -w @finos/sail-server\" \"npm run dev -w @finos/sail-web\"",
+    "build": "npm run build -w @finos/sail-desktop-agent -w @finos/sail-platform-api -w @finos/sail-ui -w @finos/sail-web -w @finos/sail-conformance-harness -w @finos/sail-server -w @finos/sail-tradingview-widgets",
+    "dev": "concurrently -n agent,api,server,web,tradingview \"npm run dev -w @finos/sail-desktop-agent\" \"npm run dev -w @finos/sail-platform-api\" \"npm run dev -w @finos/sail-server\" \"npm run dev -w @finos/sail-web\" \"npm run dev -w @finos/sail-tradingview-widgets\"",
     "dev:desktop": "concurrently -n server,electron \"npm run dev -w @finos/sail-server\" \"npm run dev -w @finos/sail-electron\"",
     "dev:conformance": "npm run dev -w @finos/sail-conformance-harness",
     "docs:dev": "npm run start --workspace=@finos/sail-docs",
@@ -55,6 +55,7 @@
     "packages/sail-conformance-harness",
     "packages/sail-electron",
     "packages/sail-server",
+    "packages/sail-tradingview-widgets",
     "website"
   ],
   "devDependencies": {

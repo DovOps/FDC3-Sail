@@ -18,21 +18,31 @@
               "description": "Returns all portfolios as fdc3.portfolios context (optional incoming context)."
             },
             "ViewPortfolio": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Returns portfolios that hold the given instrument (uses context id.ticker)."
             },
             "ViewHoldings": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Same behavior as ViewPortfolio; returns matching portfolios as fdc3.portfolios context."
             }
           },
           "raises": {
-            "CreateOrder": ["fdc3.order"],
-            "ViewInstrument": ["fdc3.instrument"]
+            "CreateOrder": [
+              "fdc3.order"
+            ],
+            "ViewInstrument": [
+              "fdc3.instrument"
+            ]
           }
         },
         "userChannels": {
-          "broadcasts": ["fdc3.instrument"],
+          "broadcasts": [
+            "fdc3.instrument"
+          ],
           "listensFor": []
         }
       },
@@ -63,23 +73,35 @@
         "intents": {
           "listensFor": {
             "CreateOrder": {
-              "contexts": ["fdc3.order"],
+              "contexts": [
+                "fdc3.order"
+              ],
               "description": "Receives order instructions from portfolio management systems and other trading applications"
             },
             "ViewOrders": {
-              "contexts": ["fdc3.order", "fdc3.instrument"],
+              "contexts": [
+                "fdc3.order",
+                "fdc3.instrument"
+              ],
               "description": "Display and manage existing orders, optionally filtered by instrument"
             },
             "ViewInstrument": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "View orders and trading activity for a specific financial instrument"
             }
           },
           "raises": {}
         },
         "userChannels": {
-          "broadcasts": ["fdc3.trade", "fdc3.instrument"],
-          "listensFor": ["fdc3.instrument"]
+          "broadcasts": [
+            "fdc3.trade",
+            "fdc3.instrument"
+          ],
+          "listensFor": [
+            "fdc3.instrument"
+          ]
         }
       },
       "icons": [
@@ -109,11 +131,15 @@
         "intents": {
           "listensFor": {
             "ViewChart": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Open or update the chart for the given instrument (id.ticker)."
             },
             "ViewAnalysis": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Same as ViewChart for this demo: focus chart on the instrument."
             }
           },
@@ -147,11 +173,15 @@
         "intents": {
           "listensFor": {
             "ViewNews": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Show news for the instrument; optional fdc3.news result with top headlines."
             },
             "ViewAnalysis": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Show news timeline focused on the instrument."
             }
           },
@@ -185,11 +215,15 @@
         "intents": {
           "listensFor": {
             "ViewChart": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Open heatmap in context of chart workflows."
             },
             "ViewAnalysis": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Open heatmap alongside analysis workflows."
             }
           },
@@ -223,7 +257,9 @@
         "intents": {
           "listensFor": {
             "ViewAnalysis": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Show technical analysis for the instrument."
             }
           },
@@ -257,7 +293,9 @@
         "intents": {
           "listensFor": {
             "ViewAnalysis": {
-              "contexts": ["fdc3.instrument"],
+              "contexts": [
+                "fdc3.instrument"
+              ],
               "description": "Show financials for the instrument."
             }
           },
@@ -330,6 +368,132 @@
       "screenshots": [],
       "version": "1.0.0",
       "publisher": "EW"
+    },
+    {
+      "appId": "trading-view-chart",
+      "name": "Trading View Chart",
+      "title": "Trading View Chart",
+      "description": "Frameable TradingView advanced chart widget that listens for fdc3.instrument broadcasts.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:4023/?mode=chart"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewChart": {
+              "contexts": [
+                "fdc3.instrument"
+              ],
+              "description": "Open or update the chart for the given instrument."
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": [
+            "fdc3.instrument"
+          ]
+        }
+      },
+      "icons": [
+        {
+          "src": "http://localhost:4023/icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "FINOS"
+    },
+    {
+      "appId": "trading-view-symbol-info",
+      "name": "Trading View Symbol Info",
+      "title": "Trading View Symbol Info",
+      "description": "Frameable TradingView symbol information widget that listens for fdc3.instrument broadcasts.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:4023/?mode=symbol-info"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewInstrument": {
+              "contexts": [
+                "fdc3.instrument"
+              ],
+              "description": "Show symbol information for the given instrument."
+            },
+            "ViewChart": {
+              "contexts": [
+                "fdc3.instrument"
+              ],
+              "description": "Open symbol information alongside chart workflows."
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": [
+            "fdc3.instrument"
+          ]
+        }
+      },
+      "icons": [
+        {
+          "src": "http://localhost:4023/icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "FINOS"
+    },
+    {
+      "appId": "trading-view-fundamentals",
+      "name": "Trading View Fundamentals",
+      "title": "Trading View Fundamentals",
+      "description": "Frameable TradingView financials widget that listens for fdc3.instrument broadcasts.",
+      "type": "web",
+      "details": {
+        "url": "http://localhost:4023/?mode=fundamentals"
+      },
+      "hostManifests": {},
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewInstrument": {
+              "contexts": [
+                "fdc3.instrument"
+              ],
+              "description": "Show fundamentals for the given instrument."
+            },
+            "ViewAnalysis": {
+              "contexts": [
+                "fdc3.instrument"
+              ],
+              "description": "Open financial analysis for the given instrument."
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": [
+            "fdc3.instrument"
+          ]
+        }
+      },
+      "icons": [
+        {
+          "src": "http://localhost:4023/icon.svg"
+        }
+      ],
+      "screenshots": [],
+      "version": "1.0.0",
+      "publisher": "FINOS"
     }
   ],
   "message": "FDC3 App Directory Configuration for Trading Applications",
@@ -362,7 +526,13 @@
         "ViewNews",
         "ViewAnalysis"
       ],
-      "contexts": ["fdc3.portfolios", "fdc3.order", "fdc3.trade", "fdc3.instrument", "fdc3.news"]
+      "contexts": [
+        "fdc3.portfolios",
+        "fdc3.order",
+        "fdc3.trade",
+        "fdc3.instrument",
+        "fdc3.news"
+      ]
     }
   }
 }
