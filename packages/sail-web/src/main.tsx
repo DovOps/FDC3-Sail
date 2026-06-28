@@ -8,6 +8,7 @@ import defaultAppDirectory from "../fixtures/default-app-directory.json"
 
 import "./index.css"
 import App from "./App"
+import { getConfiguredAppDirectoryUrls } from "./config/app-directory-sources"
 import { useWorkspaceStore } from "./stores/workspace-store"
 import { ChannelSelectorTestPage } from "./tests/ChannelSelectorTestPage"
 
@@ -88,6 +89,7 @@ if (isChannelSelectorE2e) {
   const platform = new SailPlatform({
     debug: true,
     appLauncher,
+    appDirectories: getConfiguredAppDirectoryUrls(),
     apps: [
       ...defaultAppDirectory.applications,
       ...conformanceAppDirectory.applications,

@@ -109,7 +109,9 @@ interface AppDirectoryProps {
 }
 
 export function AppDirectory({ panelProps }: AppDirectoryProps) {
-  const { apps, isLoading, error, loadApps, refreshApps } = useAppDirectoryStore()
+  const { apps, isLoading, error, directoryUrls, loadApps, refreshApps, loadDirectoriesFromUrls } =
+    useAppDirectoryStore()
+  const [directoryUrl, setDirectoryUrl] = useState("")
   const { addPanel, workspaces, activeWorkspaceId } = useWorkspaceStore()
   const { closeQuickAccessPanel } = useUIStore()
   const activeWorkspace = workspaces.get(activeWorkspaceId)
@@ -183,6 +185,20 @@ export function AppDirectory({ panelProps }: AppDirectoryProps) {
     closeQuickAccessPanel()
   }
 
+  const handleAddDirectory = () => {
+    const nextUrl = directoryUrl.trim()
+    if (!nextUrl || directoryUrls.includes(nextUrl)) {
+      return
+    }
+
+    setDirectoryUrl("")
+    void loadDirectoriesFromUrls([...directoryUrls, nextUrl])
+  }
+
+  const handleRemoveDirectory = (url: string) => {
+    void loadDirectoriesFromUrls(directoryUrls.filter(entry => entry !== url))
+  }
+
   if (error) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
@@ -239,6 +255,70 @@ export function AppDirectory({ panelProps }: AppDirectoryProps) {
           Browse and launch applications ({apps.length} available)
         </p>
       </div>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-base">App Directory Sources</CardTitle>
+          <CardDescription>
+            Add or reload App Directory endpoints for this Sail session.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={directoryUrl}
+                onChange={event => setDirectoryUrl(event.target.value)}
+                onKeyDown={event => {
+                  if (event.key === "Enter") {
+                    handleAddDirectory()
+                  }
+                }}
+                placeholder="https://example.com/v2/apps"
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex-1 rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              />
+              <button
+                type="button"
+                onClick={handleAddDirectory}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm"
+              >
+                Add
+              </button>
+              <button
+                type="button"
+                onClick={() => void loadDirectoriesFromUrls(directoryUrls)}
+                className="bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md px-4 py-2 text-sm"
+              >
+                Reload
+              </button>
+            </div>
+            {directoryUrls.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {directoryUrls.map(url => (
+                  <div
+                    key={url}
+                    className="border-border flex items-center justify-between gap-3 rounded-md border px-3 py-2 text-sm"
+                  >
+                    <span className="truncate">{url}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveDirectory(url)}
+                      className="text-muted-foreground hover:text-foreground text-xs"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                No external App Directory sources configured.
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {apps.map(app => (

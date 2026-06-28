@@ -117,14 +117,16 @@ export const createAppDirectoryStore = (platform: SailPlatform) =>
 
       // Load apps from the browser desktop agent's app directory
       loadApps: () => {
-        const { setLoading, setError, setApps } = get()
+        const { setLoading, setError, setApps, setDirectoryUrls } = get()
 
         try {
           setLoading(true)
           setError(null)
 
-          const apps = retrieveAllApps(platform.agent.getState().appDirectory)
+          const appDirectory = platform.agent.getState().appDirectory
+          const apps = retrieveAllApps(appDirectory)
 
+          setDirectoryUrls(appDirectory.directoryUrls)
           setApps(apps)
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to load apps"

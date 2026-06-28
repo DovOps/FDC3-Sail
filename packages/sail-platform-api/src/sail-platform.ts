@@ -87,6 +87,11 @@ export interface SailPlatformConfig {
   apps?: DirectoryApp[]
 
   /**
+   * App Directory endpoint URLs to load into the directory.
+   */
+  appDirectories?: string[]
+
+  /**
    * Custom user channels (defaults to standard FDC3 channels).
    */
   userChannels?: BrowserTypes.Channel[]
@@ -232,6 +237,7 @@ export class SailPlatform {
     const desktopAgent = createBrowserDesktopAgent({
       appLauncher: this.config.appLauncher,
       apps: this.config.apps,
+      appDirectories: this.config.appDirectories,
       userChannels: this.config.userChannels,
       implementationMetadata: this.config.implementationMetadata,
       openContextListenerTimeoutMs: this.config.openContextListenerTimeoutMs,
